@@ -3,11 +3,14 @@
 
 extern crate libc;
 
-use libc::{size_t, c_uchar, c_int, c_ulonglong, c_char, c_void,
-           uint32_t, uint64_t, uint8_t, int32_t, int64_t, uint16_t};
+use std::mem;
+use libc::{c_int, c_char, c_void, uint32_t, int64_t};
 
-const NK:usize = 123;   // FIXME: !!!
-const NLEN:usize = 256; // FIXME: !!!
+// TODO: autogenerate this part!
+const NK:usize = 21;      // See amcl.h
+const NLEN:usize = 5;     // use amcl_build command to get this
+pub type chunk = int64_t; // use amcl_build command to get this
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 #[repr(C)]
 pub struct csprng {
@@ -18,7 +21,7 @@ pub struct csprng {
      pool: [c_char; 32]
 }
 
-pub type BIG = [int64_t; NLEN];
+pub type BIG = [chunk; NLEN];
 pub type octet = c_char;
 
 extern {
@@ -40,10 +43,21 @@ extern {
 #[cfg(test)]
 mod tests {
     use super::*;
+
     #[test]
     fn test_amcl_version() {
         unsafe {
             amcl_version();
+        }
+    }
+
+    #[test]
+    fn test_rng() {
+        unsafe {
+            let mut rng: csprng = mem::zeroed();
+            let mut o: octet = 0;
+            CREATE_CSPRNG(&mut rng, &mut o);
+            KILL_CSPRNG(&mut rng);
         }
     }
 }
