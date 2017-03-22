@@ -46,8 +46,8 @@ fn main() {
         .current_dir(&dst.join("build")));
 
     println!("cargo:rustc-flags=-L {}/lib -l amcl_curve -l amcl_core", dst.join("pkg").display());
-    println!("cargo:root={}", dst.display());
-    println!("cargo:include={}/include", dst.display());
+    println!("cargo:root={}", dst.join("pkg").display());
+    println!("cargo:include={}/include", dst.join("pkg").display());
 }
 
 fn run(cmd: &mut Command) {
