@@ -6,6 +6,7 @@ use std::env;
 use std::path::Path;
 
 fn main() {
+    // FIXME: search for built lib!
     match pkg_config::find_library("libamcl_curve") {
         Ok(..) => return,
         Err(..) => {}
@@ -16,7 +17,8 @@ fn main() {
 
     let src = Path::new(&cargo_dir[..]);
     let dst = Path::new(&output_dir[..]);
-    let target = env::var("TARGET").unwrap();
+    // TODO: check it!
+    //let target = env::var("TARGET").unwrap();
 
     let root = src.join("milagro-crypto-c");
 
