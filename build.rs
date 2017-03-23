@@ -44,6 +44,9 @@ fn main() {
     }
 
     if found {
+        println!("cargo:rustc-flags=-L {}/lib -l amcl_curve -l amcl_core", dst.join("pkg").display());
+        println!("cargo:root={}", dst.join("pkg").display());
+        println!("cargo:include={}/include", dst.join("pkg").display());
         return;
     }
 
@@ -60,6 +63,7 @@ fn main() {
         .arg("-c")
         .arg(&format!("cd {} && \
                        cmake \
+                       -DCMAKE_BUILD_TYPE=Release \
                        -DCMAKE_INSTALL_PREFIX=/ \
                        -DBUILD_SHARED_LIBS=OFF \
                        -DCMAKE_POSITION_INDEPENDENT_CODE=ON {}",
