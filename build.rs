@@ -6,17 +6,47 @@ use std::env;
 use std::path::Path;
 
 fn main() {
-    // FIXME: search for built lib!
-    match pkg_config::find_library("libamcl_curve") {
-        Ok(..) => return,
-        Err(..) => {}
-    }
-
     let cargo_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let output_dir = env::var("OUT_DIR").unwrap();
 
     let src = Path::new(&cargo_dir[..]);
     let dst = Path::new(&output_dir[..]);
+
+    let libs = vec!["libamcl_curve", "libamcl_core"];
+
+    let mut found = true;
+    for l in libs {
+        println!("searching for {}", l);
+        match pkg_config::find_library(l) {
+            Ok(..) => {},
+            Err(..) => {
+                println!("pkg-config cannot find {}", l);
+                let mdata = fs::metadata(
+                    &format!("{}/{}.a",
+                             dst.join("pkg/lib").to_str().unwrap(),
+                             l));
+                match mdata {
+                    Ok(md) => {
+                        if !md.is_file() {
+                            found = false;
+                            println!("not found");
+                            break;
+                        }
+                    },
+                    Err(..) => {
+                        found = false;
+                        println!("error getting metadata");
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    if found {
+        return;
+    }
+
     // TODO: check it!
     //let target = env::var("TARGET").unwrap();
 
