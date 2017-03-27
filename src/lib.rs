@@ -84,6 +84,7 @@ mod tests {
         unsafe {
             amcl_version();
         }
+        // no assert, segfault means test failed
     }
 
     #[test]
@@ -99,23 +100,24 @@ mod tests {
             CREATE_CSPRNG(&mut rng, &mut o);
             KILL_CSPRNG(&mut rng);
         }
+        // no assert, segfault means test failed
     }
 
     #[test]
     fn test_ops() {
+        let mut x: [BIG; 1] = FF_ZERO!(1);
+        let mut y: [BIG; 1] = FF_ZERO!(1);
+        let mut z: [BIG; 2] = FF_ZERO!(2);
+        let val: [uint8_t; 32] = [ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03 ];
+        let mut o = octet {
+            len: 8,
+            max: 8,
+            val: &val[0]
+        };
         unsafe {
-            let val: [uint8_t; 32] = [ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03 ];
-            let mut o = octet {
-                len: 8,
-                max: 8,
-                val: &val[0]
-            };
-            let mut x: [BIG; 1] = FF_ZERO!(1);
-            let mut y: [BIG; 1] = FF_ZERO!(1);
-            let mut z: [BIG; 2] = FF_ZERO!(2);
 
             FF_fromOctet(&mut x[0], &mut o, 1);
             FF_fromOctet(&mut y[0], &mut o, 1);
@@ -129,6 +131,8 @@ mod tests {
 
             FF_sub(&mut z[0], &mut x[0], &mut y[0], 1);
             FF_output(&mut z[0], 1);
+
         }
+        assert_eq!(z[0][0], 9);
     }
 }
