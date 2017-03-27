@@ -3,7 +3,6 @@
 
 extern crate libc;
 
-use std::mem;
 use libc::{c_int, c_char, c_void, uint8_t, uint32_t, int64_t};
 
 // TODO: autogenerate this part!
@@ -11,7 +10,7 @@ const NLEN:usize = 5;     // use amcl_build command to get this
 pub type chunk = int64_t; // use amcl_build command to get this
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-const NK:usize = 21;      // See amcl.h
+const NK:usize = 21; // See amcl.h
 
 #[repr(C)]
 pub struct csprng {
@@ -22,7 +21,31 @@ pub struct csprng {
      pool: [c_char; 32]
 }
 
-pub type BIG = [chunk; NLEN];
+macro_rules! CSPRNG_INIT {
+    () => {
+        csprng {
+            ira: [0;NK],
+            rndptr: 0,
+            borrow: 0,
+            pool_ptr: 0,
+            pool: [0; 32]
+        };
+    };
+}
+
+pub type BIG = [ chunk; NLEN ];
+
+macro_rules! BIG_ZERO {
+    () => {
+        [ 0; NLEN ];
+    };
+}
+
+macro_rules! FF_ZERO {
+    ( $x:expr ) => {
+        [ BIG_ZERO!(); $x ];
+    };
+}
 
 #[repr(C)]
 pub struct octet<'l> {
@@ -66,8 +89,8 @@ mod tests {
     #[test]
     fn test_rng() {
         unsafe {
-            let mut rng: csprng = mem::zeroed();
-            let val: [uint8_t; 8] = mem::zeroed();
+            let mut rng: csprng = CSPRNG_INIT!();
+            let val: [uint8_t; 8] = [0; 8];
             let mut o: octet = octet {
                 len: 8,
                 max: 8,
@@ -81,31 +104,31 @@ mod tests {
     #[test]
     fn test_ops() {
         unsafe {
-            let mut val: [uint8_t; 32] = [ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02 ];
+            let val: [uint8_t; 32] = [ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03 ];
             let mut o = octet {
                 len: 8,
                 max: 8,
                 val: &val[0]
             };
-            let mut x: BIG = mem::zeroed();
-            let mut y: BIG = mem::zeroed();
-            let mut z: BIG = mem::zeroed();
+            let mut x: [BIG; 1] = FF_ZERO!(1);
+            let mut y: [BIG; 1] = FF_ZERO!(1);
+            let mut z: [BIG; 2] = FF_ZERO!(2);
 
-            FF_fromOctet(&mut x, &mut o, 1);
-            FF_fromOctet(&mut y, &mut o, 1);
-            FF_fromOctet(&mut z, &mut o, 1);
+            FF_fromOctet(&mut x[0], &mut o, 1);
+            FF_fromOctet(&mut y[0], &mut o, 1);
+            FF_fromOctet(&mut z[0], &mut o, 2);
 
-//            FF_mul(&mut z, &mut x, &mut y, 1);
-//            FF_output(&mut z, 1);
+            FF_mul(&mut z[0], &mut x[0], &mut y[0], 1);
+            FF_output(&mut z[0], 1);
 
-            FF_add(&mut z, &mut x, &mut y, 1);
-            FF_output(&mut z, 1);
+            FF_add(&mut x[0], &mut z[0], &mut y[0], 1);
+            FF_output(&mut x[0], 1);
 
-            FF_sub(&mut z, &mut x, &mut y, 1);
-            FF_output(&mut z, 1);
+            FF_sub(&mut z[0], &mut x[0], &mut y[0], 1);
+            FF_output(&mut z[0], 1);
         }
     }
 }
