@@ -35,6 +35,7 @@ pub struct BigNum {
 }
 
 impl BigNum {
+    // TODO: check/assert BigNum length!
 
     /*
      * New
@@ -163,7 +164,7 @@ impl BigNum {
      * is_prime
      */
     pub fn is_prime(&mut self, rng: &mut Random) -> bool {
-        let mut ret: c_int;
+        let ret: c_int;
         let len = self.storage.len();
         unsafe {
             ret = FF_prime(&mut self.storage.as_mut_slice()[0],
@@ -206,7 +207,7 @@ impl fmt::Display for BigNum {
     }
 }
 
-    
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -217,7 +218,7 @@ mod tests {
                               0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00,
                               0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
                               0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00 ];
-        let mut x = BigNum::from_bytes(&val[0..], 32);
+        let x = BigNum::from_bytes(&val[0..], 32);
         let str = x.to_string();
         println!("bignum_io: str = {}", x);
         assert_eq!(str, "112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF00");
@@ -230,7 +231,7 @@ mod tests {
                               0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                               0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01 ];
         let mut x = BigNum::from_bytes(&val[0..], 32);
-        let mut y = BigNum::from_bytes(&val[0..], 32);
+        let y = BigNum::from_bytes(&val[0..], 32);
         x.add(y);
         let str = x.to_string();
         println!("bignum_add: str = {}", str);
@@ -248,7 +249,7 @@ mod tests {
                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02 ];
         let mut x = BigNum::from_bytes(&valx[0..], 32);
-        let mut y = BigNum::from_bytes(&valy[0..], 32);
+        let y = BigNum::from_bytes(&valy[0..], 32);
         x.sub(y);
         let str = x.to_string();
         println!("bignum_sub: str = {}", str);
@@ -262,7 +263,7 @@ mod tests {
                               0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                               0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01 ];
         let mut x = BigNum::from_bytes(&val[0..], 32);
-        let mut y = BigNum::from_bytes(&val[0..], 32);
+        let y = BigNum::from_bytes(&val[0..], 32);
         x.mul(y);
         let str = x.to_string();
         println!("bignum_mul: str = {}", str);
@@ -295,7 +296,7 @@ mod tests {
                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00 ];
         let mut x = BigNum::from_bytes(&valx[0..], 32);
-        let mut y = BigNum::from_bytes(&valy[0..], 32);
+        let y = BigNum::from_bytes(&valy[0..], 32);
         x.modulus(y);
         let str = x.to_string();
         println!("bignum_modulus: str = {}", str);
@@ -317,8 +318,8 @@ mod tests {
                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00 ];
         let mut x = BigNum::from_bytes(&valx[0..], 32);
-        let mut e = BigNum::from_bytes(&vale[0..], 32);
-        let mut p = BigNum::from_bytes(&valp[0..], 32);
+        let e = BigNum::from_bytes(&vale[0..], 32);
+        let p = BigNum::from_bytes(&valp[0..], 32);
         x.pow(e,p);
         let str = x.to_string();
         println!("bignum_modulus: str = {}", str);
@@ -363,7 +364,7 @@ mod tests {
                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00 ];
-        let mut bv = BigNum::from_bytes(&modv[0..], 32);
+        let bv = BigNum::from_bytes(&modv[0..], 32);
 
         r.random(&mut rng);
         rn.randomnum(bv, &mut rng);
