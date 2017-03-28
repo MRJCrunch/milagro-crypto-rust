@@ -10,7 +10,7 @@ pub type chunk = int64_t;  // use amcl_build command to get this
 pub const MODBYTES:usize = 32; // use amcl_build command to get this
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-const NK:usize = 21; // See amcl.h
+pub const NK:usize = 21; // See amcl.h
 
 #[repr(C)]
 pub struct csprng {
@@ -31,6 +31,12 @@ macro_rules! CSPRNG_INIT {
             pool: [0; 32]
         };
     };
+}
+
+impl csprng {
+    pub fn new() -> csprng {
+        CSPRNG_INIT!()
+    }
 }
 
 pub type BIG = [ chunk; NLEN ];
@@ -72,18 +78,19 @@ extern {
     pub fn KILL_CSPRNG(R: &mut csprng) -> c_void;
 
     pub fn FF_random(x: &mut BIG, R: &mut csprng, n: c_int) -> c_void;
-    pub fn FF_mul(x: &mut BIG, y: &mut BIG, z: &mut BIG, n: c_int) -> c_void;
-    pub fn FF_add(x: &mut BIG, y: &mut BIG, z: &mut BIG, n: c_int) -> c_void;
-    pub fn FF_sub(x: &mut BIG, y: &mut BIG, z: &mut BIG, n: c_int) -> c_void;
-    pub fn FF_mod(x: &mut BIG, m: &mut BIG, n: c_int) -> c_void;
-    pub fn FF_sqr(x: &mut BIG, y: &mut BIG, n: c_int) -> c_void;
-    pub fn FF_pow(r: &mut BIG, x: &mut BIG, e: &mut BIG, m: &mut BIG, n: c_int) -> c_void;
+    pub fn FF_randomnum(x: &mut BIG, p: &BIG, R: &mut csprng, n: c_int) -> c_void;
+    pub fn FF_mul(x: &mut BIG, y: &BIG, z: &BIG, n: c_int) -> c_void;
+    pub fn FF_add(x: &mut BIG, y: &BIG, z: &BIG, n: c_int) -> c_void;
+    pub fn FF_sub(x: &mut BIG, y: &BIG, z: &BIG, n: c_int) -> c_void;
+    pub fn FF_mod(x: &mut BIG, m: &BIG, n: c_int) -> c_void;
+    pub fn FF_sqr(x: &mut BIG, y: &BIG, n: c_int) -> c_void;
+    pub fn FF_pow(r: &mut BIG, x: &BIG, e: &BIG, m: &BIG, n: c_int) -> c_void;
     pub fn FF_prime(x: &mut BIG, R: &mut csprng, n: c_int) -> c_int;
 
     pub fn FF_norm(x: &mut BIG, n: c_int) -> c_void;
-    pub fn FF_output(x: &mut BIG, n: c_int) -> c_void;
+    pub fn FF_output(x: &BIG, n: c_int) -> c_void;
     pub fn FF_fromOctet(x: &mut BIG, S: &mut octet, n: c_int) -> c_void;
-    pub fn FF_toOctet(S: &mut octet, x: &mut BIG, n: c_int) -> c_void;
+    pub fn FF_toOctet(S: &mut octet, x: &BIG, n: c_int) -> c_void;
 
     pub fn BIG_nbits(a: &BIG) -> c_int;
     pub fn BIG_copy(d: &mut BIG, s: &BIG) -> c_void;
