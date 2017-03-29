@@ -66,9 +66,10 @@ impl BigNum {
     /*
      * to_string
      */
-    pub fn to_string(&mut self) -> String {
+    pub fn to_string(&self) -> String {
         let len = self.storage.len() as i32;
-        return ff_to_string(self.storage.as_mut_slice(), len);
+        let mut slice = self.storage.clone();
+        return ff_to_string(slice.as_mut_slice(), len);
     }
 
     /*
