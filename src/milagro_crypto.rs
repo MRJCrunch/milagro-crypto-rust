@@ -1,6 +1,7 @@
 extern crate libc;
 use self::libc::{c_int};
 use std::fmt;
+use std::cmp;
 
 #[macro_use]
 use wrappers::*;
@@ -41,8 +42,8 @@ impl BigNum {
      * New
      */
     pub fn new(n: usize) -> BigNum {
-        let mut arr = Vec::<BIG>::with_capacity(n);
-        for i in 0..n {
+        let mut arr = Vec::<BIG>::with_capacity(cmp::max(n,2));
+        for _ in 0..n {
             arr.push(BIG_ZERO!());
         }
         BigNum {
@@ -64,12 +65,43 @@ impl BigNum {
     }
 
     /*
-     * to_string
+     * from_hex
      */
-    pub fn to_string(&self) -> String {
+    pub fn from_hex(val: &str) -> BigNum {
+        let mut len: usize = val.len();
+        len += 63;
+        len &= !63;
+        let mut bval = Vec::<u8>::with_capacity(len);
+        let mut padded:String = String::new();
+        for _ in 0..(len - val.len()) {
+            padded.push('0');
+        }
+        padded.push_str(val);
+        for i in 0..(len/2) {
+            let hex = &padded[2*i..2*i+2];
+            let b: u8 = u8::from_str_radix(hex, 16).unwrap();
+            bval.push(b);
+        }
+        return BigNum::from_bytes(bval.as_slice(), len/2);
+    }
+
+    /*
+     * to_hex
+     */
+    pub fn to_hex(&self) -> String {
         let len = self.storage.len() as i32;
         let mut slice = self.storage.clone();
-        return ff_to_string(slice.as_mut_slice(), len);
+        return ff_to_hex(slice.as_mut_slice(), len);
+    }
+
+    /*
+     * set_size
+     */
+    pub fn set_size(&mut self, n: usize) {
+        let nn = cmp::max(2,n) - self.storage.len();
+        for _ in 0..nn {
+            self.storage.push(BIG_ZERO!());
+        }
     }
 
     /*
@@ -204,7 +236,7 @@ impl BigNum {
 
 impl fmt::Display for BigNum {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.to_string())
+        write!(f, "{}", self.to_hex())
     }
 }
 
@@ -213,60 +245,45 @@ impl fmt::Display for BigNum {
 mod tests {
     use super::*;
 
+    const SEED: [u8; 32] = [ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                             0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00,
+                             0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                             0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02 ];
+
     #[test]
     fn test_bignum_io() {
-        let val: [u8; 32] = [ 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
-                              0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00,
-                              0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
-                              0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00 ];
-        let x = BigNum::from_bytes(&val[0..], 32);
-        let str = x.to_string();
+        let x = BigNum::from_hex("112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF00");
+        let str = x.to_hex();
         println!("bignum_io: str = {}", x);
         assert_eq!(str, "112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF00");
     }
 
     #[test]
     fn test_bignum_add() {
-        let val: [u8; 32] = [ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                              0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                              0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                              0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01 ];
-        let mut x = BigNum::from_bytes(&val[0..], 32);
-        let y = BigNum::from_bytes(&val[0..], 32);
+        let mut x = BigNum::from_hex("1");
+        let y = BigNum::from_hex("1");
         x.add(y);
-        let str = x.to_string();
+        let str = x.to_hex();
         println!("bignum_add: str = {}", str);
         assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000002");
     }
 
     #[test]
     fn test_bignum_sub() {
-        let valx: [u8; 32] = [ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01 ];
-        let valy: [u8; 32] = [ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02 ];
-        let mut x = BigNum::from_bytes(&valx[0..], 32);
-        let y = BigNum::from_bytes(&valy[0..], 32);
+        let mut x = BigNum::from_hex("100");
+        let y = BigNum::from_hex("1");
         x.sub(y);
-        let str = x.to_string();
+        let str = x.to_hex();
         println!("bignum_sub: str = {}", str);
         assert_eq!(str, "00000000000000000000000000000000000000000000000000000000000000FF");
     }
 
     #[test]
     fn test_bignum_mul() {
-        let val: [u8; 32] = [ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                              0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                              0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                              0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01 ];
-        let mut x = BigNum::from_bytes(&val[0..], 32);
-        let y = BigNum::from_bytes(&val[0..], 32);
+        let mut x = BigNum::from_hex("101");
+        let y = BigNum::from_hex("101");
         x.mul(y);
-        let str = x.to_string();
+        let str = x.to_hex();
         println!("bignum_mul: str = {}", str);
         assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
                          0000000000000000000000000000000000000000000000000000000000010201");
@@ -274,13 +291,9 @@ mod tests {
 
     #[test]
     fn test_bignum_sqr() {
-        let val: [u8; 32] = [ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                              0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                              0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                              0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00 ];
-        let mut x = BigNum::from_bytes(&val[0..], 32);
+        let mut x = BigNum::from_hex("100");
         x.sqr();
-        let str = x.to_string();
+        let str = x.to_hex();
         println!("bignum_sqr: str = {}", str);
         assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
                          0000000000000000000000000000000000000000000000000000000000010000");
@@ -288,35 +301,22 @@ mod tests {
 
     #[test]
     fn test_bignum_modulus() {
-        let valx: [u8; 32] = [ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x23, 0x45 ];
-        let valy: [u8; 32] = [ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00 ];
-        let mut x = BigNum::from_bytes(&valx[0..], 32);
-        let y = BigNum::from_bytes(&valy[0..], 32);
+        let mut x = BigNum::from_hex("12345");
+        let y = BigNum::from_hex("10000");
         x.modulus(y);
-        let str = x.to_string();
+        let str = x.to_hex();
         println!("bignum_modulus: str = {}", str);
         assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000002345");
     }
 
     #[test]
     fn test_bignum_pow() {
-        let mut valx: [u8; 64] = [ 0; 64 ];
-        let mut vale: [u8; 64] = [ 0; 64 ];
-        let mut valp: [u8; 64] = [ 0; 64 ];
-        valx[63] = 3;
-        vale[63] = 32;
-        valp[61] = 1;
-        let mut x = BigNum::from_bytes(&valx[0..], 64);
-        let e = BigNum::from_bytes(&vale[0..], 64);
-        let p = BigNum::from_bytes(&valp[0..], 64);
+        let mut x = BigNum::from_hex("3");
+        let e = BigNum::from_hex("20");
+        let p = BigNum::from_hex("10000");
+        x.set_size(2); // pow needs 2 BIGs at least, infinite recursion otherwise
         x.pow(e,p);
-        let str = x.to_string();
+        let str = x.to_hex();
         println!("bignum_modulus: str = {}", str);
         assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
                          0000000000000000000000000000000000000000000000000000000000009A1F");
@@ -324,43 +324,26 @@ mod tests {
 
     #[test]
     fn test_bignum_is_prime() {
-        let seed: [u8; 32] = [ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02 ];
-        let mut valn: [u8; 64] = [ 0; 64 ];
-        let mut valp: [u8; 64] = [ 0; 64 ];
-        valn[62] = 1;
-        valp[63] = 179;
-        let mut bp = BigNum::from_bytes(&valp[0..], 64);
-        let mut bn = BigNum::from_bytes(&valn[0..], 64);
-        let mut rng = Random::new(seed);
+        let mut rng = Random::new(SEED);
+        let mut bp = BigNum::from_hex("7FFFFFFF");
+        let mut bn = BigNum::from_hex("4");
+        bp.set_size(2); // prime->pow needs 2 BIGs at least, infinite recursion otherwise
+        bn.set_size(2); // prime->pow needs 2 BIGs at least, infinite recursion otherwise
         let p = bp.is_prime(&mut rng);
         let n = bn.is_prime(&mut rng);
-        println!("bignum_is_prime: p = {}, n = {}", p, n);
+        println!("bignum_is_prime: {} = {}, {} = {}", bp, p, bn, n);
         assert!(p);
         assert!(!n);
     }
 
     #[test]
     fn test_bignum_randoms() {
-        let seed: [u8; 32] = [ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02 ];
         let mut r = BigNum::new(1);
         let mut rn = BigNum::new(1);
-        let mut rng = Random::new(seed);
-
-        let modv: [u8; 32] = [ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                               0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00 ];
-        let bv = BigNum::from_bytes(&modv[0..], 32);
-
+        let mut rng = Random::new(SEED);
+        let bv = BigNum::from_hex("100");
         r.random(&mut rng);
         rn.randomnum(bv, &mut rng);
-
         println!("bignum_randoms: r = {}, rn = {}", r, rn);
     }
 }

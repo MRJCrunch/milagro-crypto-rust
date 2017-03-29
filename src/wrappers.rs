@@ -97,7 +97,7 @@ extern {
     pub fn BIG_shr(a: &mut BIG, k: c_int) -> c_void;
 }
 
-pub fn big_to_string(a: &BIG) -> String {
+pub fn big_to_hex(a: &BIG) -> String {
     let mut ret: String = String::new();
     let mut b: BIG = BIG_ZERO!();
     let mut len: usize;
@@ -128,12 +128,12 @@ pub fn big_to_string(a: &BIG) -> String {
     return ret;
  }
 
-pub fn ff_to_string(x: &mut [BIG], n: c_int) -> String {
+pub fn ff_to_hex(x: &mut [BIG], n: c_int) -> String {
     let mut ret:String = String::new();
     unsafe {
         FF_norm(&mut x[0], n);
         for i in (0..n).rev() {
-            ret.push_str(big_to_string(&mut x[i as usize]).as_str());
+            ret.push_str(big_to_hex(&mut x[i as usize]).as_str());
             if i > 0 {
                 ret.push(' ');
             }
@@ -191,13 +191,13 @@ mod tests {
 
             // 3 * 3 + 3 - 3 == 9
             FF_mul(&mut z[0], &mut x[0], &mut y[0], 1);
-            println!("3 * 3 = {}", ff_to_string(&mut z, 1));
+            println!("3 * 3 = {}", ff_to_hex(&mut z, 1));
 
             FF_add(&mut x[0], &mut z[0], &mut y[0], 1);
-            println!("3 * 3 + 3 = {}", ff_to_string(&mut x, 1));
+            println!("3 * 3 + 3 = {}", ff_to_hex(&mut x, 1));
 
             FF_sub(&mut z[0], &mut x[0], &mut y[0], 1);
-            println!("3 * 3 + 3 - 3 = {}", ff_to_string(&mut z, 1));
+            println!("3 * 3 + 3 - 3 = {}", ff_to_hex(&mut z, 1));
         }
         assert_eq!(z[0][0], 9);
     }
@@ -217,7 +217,7 @@ mod tests {
         unsafe {
             FF_fromOctet(&mut x[0], &mut o, 1);
         }
-        let str = ff_to_string(&mut x, 1);
+        let str = ff_to_hex(&mut x, 1);
         println!("strout = {}", str);
         assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000103");
     }
@@ -241,17 +241,17 @@ mod tests {
             FF_fromOctet(&mut y[0], &mut o, 1);
             FF_fromOctet(&mut z[0], &mut o, 1);
 
-            println!("X = {}", ff_to_string(&mut x, 2));
-            println!("Y = {}", ff_to_string(&mut y, 2));
-            println!("Z = {}", ff_to_string(&mut z, 4));
+            println!("X = {}", ff_to_hex(&mut x, 2));
+            println!("Y = {}", ff_to_hex(&mut y, 2));
+            println!("Z = {}", ff_to_hex(&mut z, 4));
 
-            for i in 0..171 {
+            for _ in 0..171 {
                 FF_mul(&mut z[0], &mut x[0], &mut y[0], 2);
                 x[0] = z[0];
                 x[1] = z[1];
             }
         }
-        let str = ff_to_string(&mut z, 4);
+        let str = ff_to_hex(&mut z, 4);
         println!("test_more_ops = {}", str);
         assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
                          0000000000000000000000000000000000000000000000000000000000000000 \
