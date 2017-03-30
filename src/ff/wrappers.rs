@@ -32,7 +32,7 @@ extern {
 }
 
 pub fn ff_to_hex(x: &mut [BIG], n: c_int) -> String {
-    let len = n * (2 * MODBYTES as i32 + 1);
+    let len = n * (2 * MODBYTES as i32 + 1) - 1;
     let mut ret:String = String::with_capacity(len as usize);
     unsafe {
         FF_norm(&mut x[0], n);
