@@ -5,7 +5,7 @@ extern crate libc;
 use self::libc::{c_int, c_void, uint8_t, uint32_t, int64_t};
 
 use randapi::wrappers::{csprng, octet};
-use big::wrappers::{BIG, NLEN, big_to_hex};
+use big::wrappers::{BIG, NLEN, MODBYTES, big_to_hex};
 
 #[macro_export]
 macro_rules! FF_ZERO {
@@ -32,7 +32,8 @@ extern {
 }
 
 pub fn ff_to_hex(x: &mut [BIG], n: c_int) -> String {
-    let mut ret:String = String::new();
+    let len = n * (2 * MODBYTES as i32 + 1);
+    let mut ret:String = String::with_capacity(len as usize);
     unsafe {
         FF_norm(&mut x[0], n);
         for i in (0..n).rev() {
