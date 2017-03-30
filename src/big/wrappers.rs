@@ -26,7 +26,7 @@ extern {
 }
 
 pub fn big_to_hex(a: &BIG) -> String {
-    let mut ret: String = String::new();
+    let mut ret: String = String::with_capacity(MODBYTES*2);
     let mut b: BIG = BIG_ZERO!();
     let mut len: usize;
 
@@ -54,4 +54,15 @@ pub fn big_to_hex(a: &BIG) -> String {
     }
 
     return ret;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_hex() {
+        let a: BIG = BIG_ZERO!();
+        assert_eq!(big_to_hex(&a), "0000000000000000000000000000000000000000000000000000000000000000");
+    }
 }
