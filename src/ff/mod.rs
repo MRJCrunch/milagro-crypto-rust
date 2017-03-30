@@ -335,13 +335,12 @@ mod tests {
         const bsize: usize = N / 8 + 1; // number of bytes for mod value
         const bigsize: usize = (bsize + MODBYTES - 1) / MODBYTES; // number of BIGs for mod value
 
+        // init mod bytes with 0 and set 1 in proper place
         let mut bytes: [ u8; bigsize*MODBYTES ] = [ 0; bigsize*MODBYTES ];
-
-        // set 1 in proper place
         bytes[bigsize*MODBYTES-bsize] = (1 as u8).wrapping_shl((N - (bsize-1)*8) as u32);
 
         let bv = FF::from_bytes(&bytes[0..], bigsize*MODBYTES);
         let r = FF::randomnum(&bv, &mut rng);
-        println!("ff_random2048: bsize = {}, bigsize = {}, bv = {}, r = {}", bsize, bigsize, bv, r);
+        println!("ff_randomN: bsize = {}, bigsize = {}, bv = {}, r = {}", bsize, bigsize, bv, r);
     }
 }
