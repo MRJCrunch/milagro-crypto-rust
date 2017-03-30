@@ -24,8 +24,9 @@ impl FF {
      * New
      */
     pub fn new(n: usize) -> FF {
-        let mut arr = Vec::<BIG>::with_capacity(cmp::max(n,2));
-        for _ in 0..n {
+        let len = cmp::max(n,2);
+        let mut arr = Vec::<BIG>::with_capacity(len);
+        for _ in 0..len {
             arr.push(BIG_ZERO!());
         }
         FF {
@@ -74,16 +75,6 @@ impl FF {
         let len = self.storage.len() as i32;
         let mut slice = self.storage.clone();
         return ff_to_hex(slice.as_mut_slice(), len);
-    }
-
-    /*
-     * set_size
-     */
-    pub fn set_size(&mut self, n: usize) {
-        let nn = cmp::max(2,n) - self.storage.len();
-        for _ in 0..nn {
-            self.storage.push(BIG_ZERO!());
-        }
     }
 
     /*
@@ -196,12 +187,12 @@ impl FF {
     /*
      * random
      */
-    pub fn random(rng: &mut Random) -> FF {
-        let mut res = FF::new(1);
+    pub fn random(rng: &mut Random, size: usize) -> FF {
+        let mut res = FF::new(size);
         unsafe {
             FF_random(&mut res.storage.as_mut_slice()[0],
                       &mut rng.rng,
-                      1);
+                      size as i32);
         }
         return res;
     }
@@ -243,7 +234,8 @@ mod tests {
         let x = FF::from_hex("112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF00");
         let str = x.to_hex();
         println!("ff_io: str = {}", x);
-        assert_eq!(str, "112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF00");
+        assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
+                         112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF00");
     }
 
     #[test]
@@ -253,7 +245,8 @@ mod tests {
         let z = FF::add(&x, &y);
         let str = z.to_hex();
         println!("ff_add: str = {}", str);
-        assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000002");
+        assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
+                         0000000000000000000000000000000000000000000000000000000000000002");
     }
 
     #[test]
@@ -263,7 +256,8 @@ mod tests {
         let z = FF::sub(&x, &y);
         let str = z.to_hex();
         println!("ff_sub: str = {}", str);
-        assert_eq!(str, "00000000000000000000000000000000000000000000000000000000000000FF");
+        assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
+                         00000000000000000000000000000000000000000000000000000000000000FF");
     }
 
     #[test]
@@ -274,6 +268,8 @@ mod tests {
         let str = z.to_hex();
         println!("ff_mul: str = {}", str);
         assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
+                         0000000000000000000000000000000000000000000000000000000000000000 \
+                         0000000000000000000000000000000000000000000000000000000000000000 \
                          0000000000000000000000000000000000000000000000000000000000010201");
     }
 
@@ -283,7 +279,8 @@ mod tests {
         let z = FF::sqr(&x);
         let str = z.to_hex();
         println!("ff_sqr: str = {}", str);
-        assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000010000");
+        assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
+                         0000000000000000000000000000000000000000000000000000000000010000");
     }
 
     #[test]
@@ -293,7 +290,8 @@ mod tests {
         FF::modulus(&mut x, &y);
         let str = x.to_hex();
         println!("ff_modulus: str = {}", str);
-        assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000002345");
+        assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
+                         0000000000000000000000000000000000000000000000000000000000002345");
     }
 
     #[test]
@@ -301,7 +299,6 @@ mod tests {
         let x = FF::from_hex("3");
         let e = FF::from_hex("20");
         let mut p = FF::from_hex("10000");
-        p.set_size(2); // pow needs 2 BIGs at least, infinite recursion otherwise
         let z = FF::pow(&x, &e, &p);
         let str = z.to_hex();
         println!("ff_modulus: str = {}", str);
@@ -314,8 +311,6 @@ mod tests {
         let mut rng = Random::new(SEED);
         let mut bp = FF::from_hex("7FFFFFFF");
         let mut bn = FF::from_hex("4");
-        bp.set_size(2); // prime->pow needs 2 BIGs at least, infinite recursion otherwise
-        bn.set_size(2); // prime->pow needs 2 BIGs at least, infinite recursion otherwise
         let p = FF::is_prime(&bp, &mut rng);
         let n = FF::is_prime(&bn, &mut rng);
         println!("ff_is_prime: {} = {}, {} = {}", bp, p, bn, n);
@@ -326,7 +321,7 @@ mod tests {
     #[test]
     fn test_ff_randoms() {
         let mut rng = Random::new(SEED);
-        let r = FF::random(&mut rng);
+        let r = FF::random(&mut rng, 3);
         let bv = FF::from_hex("100");
         let rn = FF::randomnum(&bv, &mut rng);
         println!("ff_randoms: r = {}, rn = {}", r, rn);
