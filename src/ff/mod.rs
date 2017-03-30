@@ -8,7 +8,7 @@ use std::cmp;
 
 pub mod wrappers;
 
-use big::wrappers::{BIG, NLEN};
+use big::wrappers::{BIG, NLEN, MODBYTES};
 use randapi::wrappers::{octet};
 use ff::wrappers::*;
 use randapi::Random;
@@ -38,7 +38,7 @@ impl FF {
      * from_bytes
      */
     pub fn from_bytes(val: &[u8], size: usize) -> FF {
-        let blen = size/32;
+        let blen = size/MODBYTES;
         let mut ret = FF::new(blen);
         let mut o = octet::new(val, size);
         unsafe {
@@ -325,5 +325,23 @@ mod tests {
         let bv = FF::from_hex("100");
         let rn = FF::randomnum(&bv, &mut rng);
         println!("ff_randoms: r = {}, rn = {}", r, rn);
+    }
+
+    #[test]
+    fn test_ff_randomN() {
+        let mut rng = Random::new(SEED);
+
+        const N: usize = 2048; // number of bits
+        const bsize: usize = N / 8 + 1; // number of bytes for mod value
+        const bigsize: usize = (bsize + MODBYTES - 1) / MODBYTES; // number of BIGs for mod value
+
+        let mut bytes: [ u8; bigsize*MODBYTES ] = [ 0; bigsize*MODBYTES ];
+
+        // set 1 in proper place
+        bytes[bigsize*MODBYTES-bsize] = (1 as u8).wrapping_shl((N - (bsize-1)*8) as u32);
+
+        let bv = FF::from_bytes(&bytes[0..], bigsize*MODBYTES);
+        let r = FF::randomnum(&bv, &mut rng);
+        println!("ff_random2048: bsize = {}, bigsize = {}, bv = {}, r = {}", bsize, bigsize, bv, r);
     }
 }
