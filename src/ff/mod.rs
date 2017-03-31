@@ -18,8 +18,6 @@ pub struct FF {
 }
 
 impl FF {
-    // TODO: check/assert FF length!
-
     /*
      * New
      */
@@ -79,10 +77,11 @@ impl FF {
 
     /*
      * add
-     * self += val
+     * a + b -> r
      */
     pub fn add(a: &FF, b: &FF) -> FF {
-        let len = cmp::max(a.storage.len(), b.storage.len());
+        let len = a.storage.len();
+        assert_eq!(a.storage.len(), b.storage.len());
         let mut res = FF::new(len);
         unsafe {
             FF_add(&mut res.storage.as_mut_slice()[0],
@@ -95,10 +94,11 @@ impl FF {
 
     /*
      * sub
-     * self -= val
+     * a - b -> r
      */
     pub fn sub(a: &FF, b: &FF) -> FF {
-        let len = cmp::max(a.storage.len(), b.storage.len());
+        let len = a.storage.len();
+        assert_eq!(a.storage.len(), b.storage.len());
         let mut res = FF::new(len);
         unsafe {
             FF_sub(&mut res.storage.as_mut_slice()[0],
@@ -111,10 +111,12 @@ impl FF {
 
     /*
      * mul
-     * self *= val
+     * a * b -> r
+     * TODO: check if double result size is ok
      */
     pub fn mul(a :&FF, b: &FF) -> FF {
-        let len = cmp::max(a.storage.len(), b.storage.len());
+        let len = a.storage.len();
+        assert_eq!(a.storage.len(), b.storage.len());
         let mut res = FF::new(2*len);
         unsafe {
             FF_mul(&mut res.storage.as_mut_slice()[0],
@@ -127,7 +129,7 @@ impl FF {
 
     /*
      * sqr
-     * self = self^2
+     * a^2 -> r
      */
     pub fn sqr(a: &FF) -> FF {
         let len = a.storage.len();
@@ -142,7 +144,7 @@ impl FF {
 
     /*
      * mod
-     * self = self mod x
+     * a = a mod x
      */
     pub fn modulus(a: &mut FF, x: &FF) {
         let len = a.storage.len() as i32;
@@ -155,7 +157,7 @@ impl FF {
 
     /*
      * pow
-     * self=self^e mod p
+     * x^e mod p -> r
      */
     pub fn pow(x: &FF, e: &FF, p: &FF) -> FF {
         let len = p.storage.len();
