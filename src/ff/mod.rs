@@ -35,9 +35,9 @@ impl FF {
     /*
      * from_bytes
      */
-    pub fn from_bytes(val: &[u8], size: usize) -> FF {
+    pub fn from_bytes(val: &[u8], size: usize, bigsize: usize) -> FF {
         let blen = size/MODBYTES;
-        let mut ret = FF::new(blen);
+        let mut ret = FF::new(cmp::max(blen, bigsize));
         let mut o = octet::new(val, size);
         unsafe {
             FF_fromOctet(&mut ret.storage.as_mut_slice()[0], &mut o, blen as i32);
@@ -48,10 +48,11 @@ impl FF {
     /*
      * from_hex
      */
-    pub fn from_hex(val: &str) -> FF {
+    pub fn from_hex(val: &str, size: usize) -> FF {
         let mut len: usize = val.len();
         len += 63;
         len &= !63;
+        len = cmp::max(len, 2*size);
         let mut bval = Vec::<u8>::with_capacity(len/2);
         let mut padded:String = String::with_capacity(len);
         for _ in 0..(len - val.len()) {
@@ -63,7 +64,7 @@ impl FF {
             let b: u8 = u8::from_str_radix(hex, 16).unwrap();
             bval.push(b);
         }
-        return FF::from_bytes(bval.as_slice(), len/2);
+        return FF::from_bytes(bval.as_slice(), len/2, 0);
     }
 
     /*
@@ -250,7 +251,7 @@ mod tests {
 
     #[test]
     fn test_ff_io() {
-        let x = FF::from_hex("112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF00");
+        let x = FF::from_hex("112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF00", 0);
         let str = x.to_hex();
         println!("ff_io: str = {}", x);
         assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
@@ -263,7 +264,7 @@ mod tests {
         for i in 0..32 {
             bytes[i] = i as u8;
         }
-        let bv = FF::from_bytes(&bytes[0..], 32);
+        let bv = FF::from_bytes(&bytes[0..], 32, 0);
         println!("ff_bytes: bv = {}", bv);
         let obytes = bv.to_bytes();
         println!("ff_bytes: obytes = {:?}", obytes);
@@ -272,8 +273,8 @@ mod tests {
 
     #[test]
     fn test_ff_add() {
-        let x = FF::from_hex("1");
-        let y = FF::from_hex("1");
+        let x = FF::from_hex("1", 0);
+        let y = FF::from_hex("1", 0);
         let z = FF::add(&x, &y);
         let str = z.to_hex();
         println!("ff_add: str = {}", str);
@@ -283,8 +284,8 @@ mod tests {
 
     #[test]
     fn test_ff_sub() {
-        let x = FF::from_hex("100");
-        let y = FF::from_hex("1");
+        let x = FF::from_hex("100", 0);
+        let y = FF::from_hex("1", 0);
         let z = FF::sub(&x, &y);
         let str = z.to_hex();
         println!("ff_sub: str = {}", str);
@@ -294,8 +295,8 @@ mod tests {
 
     #[test]
     fn test_ff_mul() {
-        let x = FF::from_hex("101");
-        let y = FF::from_hex("101");
+        let x = FF::from_hex("101", 0);
+        let y = FF::from_hex("101", 0);
         let z = FF::mul(&x, &y);
         let str = z.to_hex();
         println!("ff_mul: str = {}", str);
@@ -307,7 +308,7 @@ mod tests {
 
     #[test]
     fn test_ff_sqr() {
-        let x = FF::from_hex("100");
+        let x = FF::from_hex("100", 0);
         let z = FF::sqr(&x);
         let str = z.to_hex();
         println!("ff_sqr: str = {}", str);
@@ -317,8 +318,8 @@ mod tests {
 
     #[test]
     fn test_ff_modulus() {
-        let mut x = FF::from_hex("12345");
-        let y = FF::from_hex("10000");
+        let mut x = FF::from_hex("12345", 0);
+        let y = FF::from_hex("10000", 0);
         FF::modulus(&mut x, &y);
         let str = x.to_hex();
         println!("ff_modulus: str = {}", str);
@@ -328,9 +329,9 @@ mod tests {
 
     #[test]
     fn test_ff_pow() {
-        let x = FF::from_hex("3");
-        let e = FF::from_hex("20");
-        let mut p = FF::from_hex("10000");
+        let x = FF::from_hex("3", 0);
+        let e = FF::from_hex("20", 0);
+        let mut p = FF::from_hex("10000", 0);
         let z = FF::pow(&x, &e, &p);
         let str = z.to_hex();
         println!("ff_modulus: str = {}", str);
@@ -341,8 +342,8 @@ mod tests {
     #[test]
     fn test_ff_is_prime() {
         let mut rng = Random::new(SEED);
-        let mut bp = FF::from_hex("7FFFFFFF");
-        let mut bn = FF::from_hex("4");
+        let mut bp = FF::from_hex("7FFFFFFF", 0);
+        let mut bn = FF::from_hex("4", 0);
         let p = FF::is_prime(&bp, &mut rng);
         let n = FF::is_prime(&bn, &mut rng);
         println!("ff_is_prime: {} = {}, {} = {}", bp, p, bn, n);
@@ -354,7 +355,7 @@ mod tests {
     fn test_ff_randoms() {
         let mut rng = Random::new(SEED);
         let r = FF::random(&mut rng, 3);
-        let bv = FF::from_hex("100");
+        let bv = FF::from_hex("100", 0);
         let rn = FF::randomnum(&bv, &mut rng);
         println!("ff_randoms: r = {}, rn = {}", r, rn);
     }
@@ -371,7 +372,7 @@ mod tests {
         let mut bytes: [ u8; bigsize*MODBYTES ] = [ 0; bigsize*MODBYTES ];
         bytes[bigsize*MODBYTES-bsize] = (1 as u8).wrapping_shl((N - (bsize-1)*8) as u32);
 
-        let bv = FF::from_bytes(&bytes[0..], bigsize*MODBYTES);
+        let bv = FF::from_bytes(&bytes[0..], bigsize*MODBYTES, 0);
         let r = FF::randomnum(&bv, &mut rng);
         println!("ff_randomN: bsize = {}, bigsize = {}, bv = {}, r = {}", bsize, bigsize, bv, r);
     }
