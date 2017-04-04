@@ -76,6 +76,23 @@ impl FF {
     }
 
     /*
+     * to_bytes
+     */
+    pub fn to_bytes(&self) -> Vec<u8> {
+        let len = self.storage.len();
+        let mut val = vec![0; len*MODBYTES];
+        let mut ret:Vec<u8> = Vec::<u8>::with_capacity(len*MODBYTES);
+        unsafe {
+            let mut octet = octet::new(val.as_mut_slice(), len*MODBYTES);
+            FF_toOctet(&mut octet, &self.storage.as_slice()[0], len as i32);
+        }
+        for i in 0..len*MODBYTES {
+            ret.push(val[i]);
+        }
+        return ret;
+    }
+
+    /*
      * add
      * a + b -> r
      */
@@ -238,6 +255,19 @@ mod tests {
         println!("ff_io: str = {}", x);
         assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
                          112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF00");
+    }
+
+    #[test]
+    fn test_ff_bytes() {
+        let mut bytes: [ u8; 32 ] = [ 0; 32 ];
+        for i in 0..32 {
+            bytes[i] = i as u8;
+        }
+        let bv = FF::from_bytes(&bytes[0..], 32);
+        println!("ff_bytes: bv = {}", bv);
+        let obytes = bv.to_bytes();
+        println!("ff_bytes: obytes = {:?}", obytes);
+        assert_eq!(bytes[0..], obytes[32..]);
     }
 
     #[test]
