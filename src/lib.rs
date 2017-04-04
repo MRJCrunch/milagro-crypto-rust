@@ -6,3 +6,6 @@ pub mod randapi;
 
 #[macro_use]
 pub mod ff;
+
+#[macro_use]
+pub mod hash;
