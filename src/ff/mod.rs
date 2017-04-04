@@ -52,7 +52,7 @@ impl FF {
         let mut len: usize = val.len();
         len += 63;
         len &= !63;
-        len = cmp::max(len, 2*bigsize);
+        len = cmp::max(len, 2*bigsize*MODBYTES);
         let mut bval = Vec::<u8>::with_capacity(len/2);
         let mut padded:String = String::with_capacity(len);
         for _ in 0..(len - val.len()) {
@@ -256,6 +256,32 @@ mod tests {
         println!("ff_io: str = {}", x);
         assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
                          112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF00");
+    }
+
+    #[test]
+    fn test_ff_io_sized_hex() {
+        let x = FF::from_hex("112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF00", 4);
+        let str = x.to_hex();
+        println!("ff_io_sized_hex: str = {}", x);
+        assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
+                         0000000000000000000000000000000000000000000000000000000000000000 \
+                         0000000000000000000000000000000000000000000000000000000000000000 \
+                         112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF00");
+    }
+
+    #[test]
+    fn test_ff_io_sized_bytes() {
+        let mut bytes: [ u8; 32 ] = [ 0; 32 ];
+        for i in 0..32 {
+            bytes[i] = i as u8;
+        }
+        let x = FF::from_bytes(&bytes[0..], 32, 4);
+        let str = x.to_hex();
+        println!("ff_io_sized_bytes: str = {}", x);
+        assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
+                         0000000000000000000000000000000000000000000000000000000000000000 \
+                         0000000000000000000000000000000000000000000000000000000000000000 \
+                         000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F");
     }
 
     #[test]
