@@ -33,6 +33,13 @@ impl FF {
     }
 
     /*
+     * len
+     */
+    pub fn len(&self) -> usize {
+        return self.storage.len();
+    }
+
+    /*
      * from_bytes
      */
     pub fn from_bytes(val: &[u8], size: usize, bigsize: usize) -> FF {
@@ -263,6 +270,7 @@ mod tests {
         let x = FF::from_hex("112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF00", 4);
         let str = x.to_hex();
         println!("ff_io_sized_hex: str = {}", x);
+        assert_eq!(x.len(), 4);
         assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
                          0000000000000000000000000000000000000000000000000000000000000000 \
                          0000000000000000000000000000000000000000000000000000000000000000 \
@@ -278,6 +286,7 @@ mod tests {
         let x = FF::from_bytes(&bytes[0..], 32, 4);
         let str = x.to_hex();
         println!("ff_io_sized_bytes: str = {}", x);
+        assert_eq!(x.len(), 4);
         assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
                          0000000000000000000000000000000000000000000000000000000000000000 \
                          0000000000000000000000000000000000000000000000000000000000000000 \
