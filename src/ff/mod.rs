@@ -48,11 +48,11 @@ impl FF {
     /*
      * from_hex
      */
-    pub fn from_hex(val: &str, size: usize) -> FF {
+    pub fn from_hex(val: &str, bigsize: usize) -> FF {
         let mut len: usize = val.len();
         len += 63;
         len &= !63;
-        len = cmp::max(len, 2*size);
+        len = cmp::max(len, 2*bigsize);
         let mut bval = Vec::<u8>::with_capacity(len/2);
         let mut padded:String = String::with_capacity(len);
         for _ in 0..(len - val.len()) {
