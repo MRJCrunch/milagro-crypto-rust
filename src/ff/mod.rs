@@ -101,6 +101,19 @@ impl FF {
     }
 
     /*
+     * inc
+     * self += m
+     */
+    pub fn inc(&mut self, m: i32) {
+        let len = self.storage.len();
+        unsafe {
+            FF_inc(&mut self.storage.as_mut_slice()[0],
+                   m,
+                   len as i32);
+        }
+    }
+
+    /*
      * add
      * a + b -> r
      */
@@ -372,6 +385,16 @@ mod tests {
         println!("ff_modulus: str = {}", str);
         assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
                          0000000000000000000000000000000000000000000000000000000000009A1F");
+    }
+
+    #[test]
+    fn test_ff_inc() {
+        let mut x = FF::from_hex("3", 0);
+        x.inc(6);
+        let str = x.to_hex();
+        println!("ff_inc: str = {}", str);
+        assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
+                         0000000000000000000000000000000000000000000000000000000000000009");
     }
 
     #[test]

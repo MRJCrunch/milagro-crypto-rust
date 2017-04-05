@@ -25,6 +25,7 @@ extern {
     pub fn FF_pow(r: &mut BIG, x: &BIG, e: &BIG, m: &BIG, n: c_int) -> c_void;
     pub fn FF_prime(x: &BIG, R: &mut csprng, n: c_int) -> c_int;
 
+    pub fn FF_inc(x: &mut BIG, m: c_int, n: c_int) -> c_void;
     pub fn FF_norm(x: &mut BIG, n: c_int) -> c_void;
     pub fn FF_output(x: &BIG, n: c_int) -> c_void;
     pub fn FF_fromOctet(x: &mut BIG, S: &mut octet, n: c_int) -> c_void;
@@ -58,13 +59,17 @@ mod tests {
         let val: [uint8_t; 32] = [ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03 ];
+                                   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02 ];
         let mut o = octet::new(&val[0..], 32);
         unsafe {
             FF_fromOctet(&mut x[0], &mut o, 1);
             FF_fromOctet(&mut y[0], &mut o, 1);
             FF_fromOctet(&mut z[0], &mut o, 1);
 
+            FF_inc(&mut x[0], 1, 1);
+            FF_inc(&mut y[0], 1, 1);
+            FF_inc(&mut z[0], 1, 1);
+            
             // 3 * 3 + 3 - 3 == 9
             FF_mul(&mut z[0], &mut x[0], &mut y[0], 1);
             println!("3 * 3 = {}", ff_to_hex(&mut z, 1));
