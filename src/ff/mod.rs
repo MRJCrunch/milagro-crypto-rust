@@ -5,6 +5,7 @@ extern crate libc;
 use self::libc::{c_int};
 use std::fmt;
 use std::cmp;
+use std::ops::{Add, Mul, Sub};
 
 pub mod wrappers;
 
@@ -270,7 +271,6 @@ impl fmt::Display for FF {
     }
 }
 
-use std::ops::{Add, Mul, Sub};
 
 impl<'a, 'b> Add<&'b FF> for &'a FF {
     type Output = FF;
