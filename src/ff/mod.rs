@@ -8,6 +8,7 @@ use std::cmp;
 use std::ops::{Add, Mul, Sub};
 
 pub mod wrappers;
+pub mod overloading;
 
 use big::wrappers::{BIG, NLEN, MODBYTES};
 use randapi::wrappers::{octet};
