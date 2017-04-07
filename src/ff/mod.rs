@@ -5,6 +5,7 @@ extern crate libc;
 use self::libc::{c_int};
 use std::fmt;
 use std::cmp;
+use std::ops::{Add, Mul, Sub};
 
 pub mod wrappers;
 
@@ -261,8 +262,22 @@ impl FF {
         }
         return res;
     }
-}
 
+    /*
+     * Set r=1/a mod p. Binary method - a<p on entry
+     */
+    pub fn inv(r: &mut FF, a: &FF, p: &FF) {
+        let len = a.storage.len() as i32;
+        unsafe {
+            FF_invmodp(
+                &mut r.storage.as_mut_slice()[0],
+                &a.storage.as_slice()[0],
+                &p.storage.as_slice()[0],
+                len
+            );
+        }
+    }
+}
 
 impl fmt::Display for FF {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -270,6 +285,30 @@ impl fmt::Display for FF {
     }
 }
 
+
+impl<'a, 'b> Add<&'b FF> for &'a FF {
+    type Output = FF;
+
+    fn add(self, other: &'b FF) -> FF {
+        FF::add(self, other)
+    }
+}
+
+impl<'a, 'b> Mul<&'b FF> for &'a FF {
+    type Output = FF;
+
+    fn mul(self, other: &'b FF) -> FF {
+        FF::mul(self, other)
+    }
+}
+
+impl<'a, 'b> Sub<&'b FF> for &'a FF {
+    type Output = FF;
+
+    fn sub(self, other: &'b FF) -> FF {
+        FF::sub(self, other)
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -453,5 +492,56 @@ mod tests {
         let bv = FF::from_bytes(&bytes[0..], bigsize*MODBYTES, 0);
         let r = FF::randomnum(&bv, &mut rng);
         println!("ff_randomN: bsize = {}, bigsize = {}, bv = {}, r = {}", bsize, bigsize, bv, r);
+    }
+
+    #[test]
+    fn inv_test() {
+        let mut r = FF::new(0);
+        let a = FF::from_hex("3", 0);
+        let p = FF::from_hex("7", 0);
+
+        FF::inv(&mut r, &a, &p);
+        let str = r.to_hex();
+        assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
+                         0000000000000000000000000000000000000000000000000000000000000005");
+    }
+
+    #[test]
+    fn plus_test() {
+        let x = FF::from_hex("1", 0);
+        let y = FF::from_hex("2", 0);
+        let z = &x + &y;
+        let str = z.to_hex();
+        println!("ff_mul: x = {}", &x);
+        println!("ff_mul: x = {}", &y);
+        println!("ff_mul: str = {}", str);
+        assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
+                         0000000000000000000000000000000000000000000000000000000000000003");
+    }
+
+    #[test]
+    fn sub_test() {
+        let x = FF::from_hex("2", 0);
+        let y = FF::from_hex("1", 0);
+        let z = &x - &y;
+        let str = z.to_hex();
+        println!("ff_mul: x = {}", &x);
+        println!("ff_mul: x = {}", &y);
+        println!("ff_mul: str = {}", str);
+        assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
+                         0000000000000000000000000000000000000000000000000000000000000001");
+    }
+
+    #[test]
+    fn mul_test() {
+        let x = FF::from_hex("2", 0);
+        let y = FF::from_hex("1", 0);
+        let z = &x * &y;
+        let str = z.to_hex();
+        println!("ff_mul: x = {}", &x);
+        println!("ff_mul: x = {}", &y);
+        println!("ff_mul: str = {}", str);
+        assert_eq!(str, "0000000000000000000000000000000000000000000000000000000000000000 \
+                         0000000000000000000000000000000000000000000000000000000000000002");
     }
 }
