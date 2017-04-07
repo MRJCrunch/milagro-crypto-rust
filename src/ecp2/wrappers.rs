@@ -14,6 +14,17 @@ pub struct ECP2 {
     z: FP2
 }
 
+impl Default for ECP2 {
+    fn default () -> ECP2 {
+        ECP2 {
+            inf: 0,
+            x: Default::default(),
+            y: Default::default(),
+            z: Default::default()
+        }
+    }
+}
+
 /*
 extern {
     pub fn qwe(qwe: asd) -> c_void;

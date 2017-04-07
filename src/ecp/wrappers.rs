@@ -4,7 +4,7 @@
 extern crate libc;
 use self::libc::{c_int, c_void, c_char, uint32_t};
 
-use big::wrappers::BIG;
+use big::wrappers::*;
 
 // KLUDGE: depends on CURVETYPE milagro define. This is "CURVETYPE: WEIERSTRASS"
 // Check amcl_build output!
@@ -14,6 +14,17 @@ pub struct ECP {
     x: BIG,
     y: BIG,
     z: BIG
+}
+
+impl Default for ECP {
+    fn default () -> ECP {
+        ECP {
+            inf: 0,
+            x: BIG_ZERO!(),
+            y: BIG_ZERO!(),
+            z: BIG_ZERO!()
+        }
+    }
 }
 
 /*

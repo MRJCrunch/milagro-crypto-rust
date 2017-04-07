@@ -20,9 +20,9 @@ mod tests {
 
     #[test]
     fn test_pair() {
-        let mut r: FP12 = unsafe { mem::zeroed() };
-        let mut P: ECP2 = unsafe { mem::zeroed() };
-        let mut Q: ECP = unsafe { mem::zeroed() };
+        let mut r: FP12 = Default::default();
+        let mut P: ECP2 = Default::default();
+        let mut Q: ECP = Default::default();
         unsafe {
 //            PAIR_ate(&mut r, &mut P, &mut Q);
         }

@@ -12,6 +12,15 @@ pub struct FP4 {
     b: FP2
 }
 
+impl Default for FP4 {
+    fn default () -> FP4 {
+        FP4 {
+            a: Default::default(),
+            b: Default::default()
+        }
+    }
+}
+
 /*
 extern {
     pub fn qwe(qwe: asd) -> c_void;

@@ -12,6 +12,15 @@ pub struct FP2 {
     b: BIG
 }
 
+impl Default for FP2 {
+    fn default () -> FP2 {
+        FP2 {
+            a: BIG_ZERO!(),
+            b: BIG_ZERO!()
+        }
+    }
+}
+
 /*
 extern {
     pub fn qwe(qwe: asd) -> c_void;
