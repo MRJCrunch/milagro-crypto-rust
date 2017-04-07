@@ -20,6 +20,28 @@ macro_rules! BIG_ZERO {
 }
 
 extern {
+    // TODO: maybe move to separate module "rom"
+    static MConst: chunk;
+    static Modulus: BIG;
+    static CURVE_Order: BIG;
+    static CURVE_Cof: BIG;
+    static CURVE_B: BIG;
+    static CURVE_Bnx: BIG;
+    static CURVE_Cru: BIG;
+    static CURVE_Fra: BIG;
+    static CURVE_Frb: BIG;
+    static CURVE_Pxa: BIG;
+    static CURVE_Pxb: BIG;
+    static CURVE_Pya: BIG;
+    static CURVE_Pyb: BIG;
+    static CURVE_Gx: BIG;
+    static CURVE_Gy: BIG;
+    static CURVE_W: [BIG; 2];
+    static CURVE_SB: [[BIG; 2]; 2];
+    static CURVE_WB: [BIG; 4];
+    static CURVE_BB: [[BIG; 4]; 4];
+    // ^^^^^^^
+    
     pub fn BIG_nbits(a: &BIG) -> c_int;
     pub fn BIG_copy(d: &mut BIG, s: &BIG) -> c_void;
     pub fn BIG_shr(a: &mut BIG, k: c_int) -> c_void;

@@ -44,7 +44,12 @@ fn main() {
     }
 
     if found {
-        println!("cargo:rustc-flags=-L {}/lib -l amcl_curve -l amcl_core", dst.join("pkg").display());
+        println!("cargo:rustc-flags=-L {}/lib \
+                  -l amcl_pairing \
+                  -l amcl_ecc \
+                  -l amcl_curve \
+                  -l amcl_core \
+                  ", dst.join("pkg").display());
         println!("cargo:root={}", dst.join("pkg").display());
         println!("cargo:include={}/include", dst.join("pkg").display());
         return;
