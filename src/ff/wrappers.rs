@@ -23,6 +23,7 @@ extern {
     pub fn FF_mod(x: &mut BIG, m: &BIG, n: c_int) -> c_void;
     pub fn FF_sqr(x: &mut BIG, y: &BIG, n: c_int) -> c_void;
     pub fn FF_pow(r: &mut BIG, x: &BIG, e: &BIG, m: &BIG, n: c_int) -> c_void;
+    pub fn FF_invmodp(r: &mut BIG, a: &BIG, p: &BIG, n: c_int) -> c_void;
     pub fn FF_prime(x: &BIG, R: &mut csprng, n: c_int) -> c_int;
 
     pub fn FF_inc(x: &mut BIG, m: c_int, n: c_int) -> c_void;
