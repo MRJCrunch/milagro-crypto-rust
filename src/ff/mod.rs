@@ -5,9 +5,9 @@ extern crate libc;
 use self::libc::{c_int};
 use std::fmt;
 use std::cmp;
-use std::ops::{Add, Mul, Sub};
 
 pub mod wrappers;
+pub mod overloading;
 
 use big::wrappers::{BIG, NLEN, MODBYTES};
 use randapi::wrappers::{octet};
@@ -538,8 +538,8 @@ mod tests {
     #[test]
     fn test_ff_set_size() {
         let mut x = FF::from_hex("3", 0);
-        x.set_size(5);
-        assert_eq!(x.to_hex(), "0000000000000000000000000000000000000000000000000000000000000000 \
+        assert_eq!(x.set_size(5).to_hex(),
+                                "0000000000000000000000000000000000000000000000000000000000000000 \
                                 0000000000000000000000000000000000000000000000000000000000000000 \
                                 0000000000000000000000000000000000000000000000000000000000000000 \
                                 0000000000000000000000000000000000000000000000000000000000000000 \
