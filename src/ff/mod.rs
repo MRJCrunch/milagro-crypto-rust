@@ -290,6 +290,12 @@ impl fmt::Display for FF {
     }
 }
 
+impl fmt::Debug for FF {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.to_hex())
+    }
+}
+
 
 impl<'a, 'b> Add<&'b FF> for &'a FF {
     type Output = FF;
