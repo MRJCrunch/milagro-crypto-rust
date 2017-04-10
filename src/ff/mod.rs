@@ -297,30 +297,6 @@ impl fmt::Debug for FF {
 }
 
 
-impl<'a, 'b> Add<&'b FF> for &'a FF {
-    type Output = FF;
-
-    fn add(self, other: &'b FF) -> FF {
-        FF::add(self, other)
-    }
-}
-
-impl<'a, 'b> Mul<&'b FF> for &'a FF {
-    type Output = FF;
-
-    fn mul(self, other: &'b FF) -> FF {
-        FF::mul(self, other)
-    }
-}
-
-impl<'a, 'b> Sub<&'b FF> for &'a FF {
-    type Output = FF;
-
-    fn sub(self, other: &'b FF) -> FF {
-        FF::sub(self, other)
-    }
-}
-
 impl Ord for FF {
     fn cmp(&self, other: &FF) -> Ordering {
         assert_eq!(self.storage.len(), other.storage.len());
