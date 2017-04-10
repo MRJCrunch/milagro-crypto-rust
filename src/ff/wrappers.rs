@@ -15,23 +15,23 @@ macro_rules! FF_ZERO {
 }
 
 extern {
-    pub fn FF_random(x: &mut BIG, R: &mut csprng, n: c_int) -> c_void;
-    pub fn FF_randomnum(x: &mut BIG, p: &BIG, R: &mut csprng, n: c_int) -> c_void;
-    pub fn FF_mul(x: &mut BIG, y: &BIG, z: &BIG, n: c_int) -> c_void;
-    pub fn FF_add(x: &mut BIG, y: &BIG, z: &BIG, n: c_int) -> c_void;
-    pub fn FF_sub(x: &mut BIG, y: &BIG, z: &BIG, n: c_int) -> c_void;
-    pub fn FF_mod(x: &mut BIG, m: &BIG, n: c_int) -> c_void;
-    pub fn FF_sqr(x: &mut BIG, y: &BIG, n: c_int) -> c_void;
-    pub fn FF_pow(r: &mut BIG, x: &BIG, e: &BIG, m: &BIG, n: c_int) -> c_void;
-    pub fn FF_invmodp(r: &mut BIG, a: &BIG, p: &BIG, n: c_int) -> c_void;
-    pub fn FF_prime(x: &BIG, R: &mut csprng, n: c_int) -> c_int;
-    pub fn FF_comp(x: &BIG, y: &BIG, n: c_int) -> c_int;
+    pub fn FF_random(x: *mut BIG, R: &mut csprng, n: c_int) -> c_void;
+    pub fn FF_randomnum(x: *mut BIG, p: *const BIG, R: &mut csprng, n: c_int) -> c_void;
+    pub fn FF_mul(x: *mut BIG, y: *const BIG, z: *const BIG, n: c_int) -> c_void;
+    pub fn FF_add(x: *mut BIG, y: *const BIG, z: *const BIG, n: c_int) -> c_void;
+    pub fn FF_sub(x: *mut BIG, y: *const BIG, z: *const BIG, n: c_int) -> c_void;
+    pub fn FF_mod(x: *mut BIG, m: *const BIG, n: c_int) -> c_void;
+    pub fn FF_sqr(x: *mut BIG, y: *const BIG, n: c_int) -> c_void;
+    pub fn FF_pow(r: *mut BIG, x: *const BIG, e: *const BIG, m: *const BIG, n: c_int) -> c_void;
+    pub fn FF_invmodp(r: *mut BIG, a: *const BIG, p: *const BIG, n: c_int) -> c_void;
+    pub fn FF_prime(x: *const BIG, R: &mut csprng, n: c_int) -> c_int;
+    pub fn FF_comp(x: *const BIG, y: *const BIG, n: c_int) -> c_int;
 
-    pub fn FF_inc(x: &mut BIG, m: c_int, n: c_int) -> c_void;
-    pub fn FF_norm(x: &mut BIG, n: c_int) -> c_void;
-    pub fn FF_output(x: &BIG, n: c_int) -> c_void;
-    pub fn FF_fromOctet(x: &mut BIG, S: &mut octet, n: c_int) -> c_void;
-    pub fn FF_toOctet(S: &mut octet, x: &BIG, n: c_int) -> c_void;
+    pub fn FF_inc(x: *mut BIG, m: c_int, n: c_int) -> c_void;
+    pub fn FF_norm(x: *mut BIG, n: c_int) -> c_void;
+    pub fn FF_output(x: *const BIG, n: c_int) -> c_void;
+    pub fn FF_fromOctet(x: *mut BIG, S: &mut octet, n: c_int) -> c_void;
+    pub fn FF_toOctet(S: &mut octet, x: *const BIG, n: c_int) -> c_void;
 }
 
 pub fn ff_to_hex(x: &mut [BIG], n: c_int) -> String {

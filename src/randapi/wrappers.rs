@@ -51,8 +51,8 @@ impl<'l> octet<'l> {
 }
 
 extern {
-    pub fn CREATE_CSPRNG(R: &mut csprng, S: &mut octet) -> c_void;
-    pub fn KILL_CSPRNG(R: &mut csprng) -> c_void;
+    pub fn CREATE_CSPRNG(R: *mut csprng, S: *mut octet) -> c_void;
+    pub fn KILL_CSPRNG(R: *mut csprng) -> c_void;
 }
 
 

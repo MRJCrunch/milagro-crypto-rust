@@ -42,9 +42,10 @@ extern {
     static CURVE_BB: [[BIG; 4]; 4];
     // ^^^^^^^
     
-    pub fn BIG_nbits(a: &BIG) -> c_int;
-    pub fn BIG_copy(d: &mut BIG, s: &BIG) -> c_void;
-    pub fn BIG_shr(a: &mut BIG, k: c_int) -> c_void;
+    pub fn BIG_nbits(a: *const BIG) -> c_int;
+    pub fn BIG_copy(d: *mut BIG, s: *const BIG) -> c_void;
+    pub fn BIG_shr(a: *mut BIG, k: c_int) -> c_void;
+    pub fn BIG_rcopy(b: *mut BIG, a: *const BIG) -> c_void;
 }
 
 pub fn big_to_hex(a: &BIG) -> String {
@@ -69,7 +70,7 @@ pub fn big_to_hex(a: &BIG) -> String {
 
     for i in (0..len).rev() {
         unsafe {
-            BIG_copy(&mut b, &a);
+            BIG_copy(&mut b, a);
             BIG_shr(&mut b, (i*4) as i32);
         }
         ret.push_str(&format!("{:X}", b[0]&15));
