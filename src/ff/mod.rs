@@ -56,6 +56,7 @@ impl FF {
      * from_bytes
      */
     pub fn from_bytes(val: &[u8], size: usize, bigsize: usize) -> FF {
+        assert!(size%MODBYTES==0);
         let blen = size/MODBYTES;
         let mut ret = FF::new(cmp::max(blen, bigsize));
         let mut o = octet::new(val, size);
@@ -509,7 +510,7 @@ mod tests {
                               3979582D7D4C0716FE892371161712F8B77AF31545420D6F075474F8847DDDC\
                               2821B32125FBA3807957E05218E655F5A8C8E7B96F1E1FFF38B9177EF81E30A\
                               E3CACAAF64E5987C2FCFDC197AC2E43800ACF3709AE381B0196F1A1BFF153B6\
-                              E93A4088E", 64);
+                              E93A4088D", 64);
         let two = FF::from_hex("2", p.len());
         let p_sub_2 = FF::sub(&p, &two);
         let b_pow_c = FF::pow(&b, &p_sub_2, &p);
