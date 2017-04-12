@@ -21,25 +21,25 @@ macro_rules! BIG_ZERO {
 
 extern {
     // TODO: maybe move to separate module "rom"
-    static MConst: chunk;
-    static Modulus: BIG;
-    static CURVE_Order: BIG;
-    static CURVE_Cof: BIG;
-    static CURVE_B: BIG;
-    static CURVE_Bnx: BIG;
-    static CURVE_Cru: BIG;
-    static CURVE_Fra: BIG;
-    static CURVE_Frb: BIG;
-    static CURVE_Pxa: BIG;
-    static CURVE_Pxb: BIG;
-    static CURVE_Pya: BIG;
-    static CURVE_Pyb: BIG;
-    static CURVE_Gx: BIG;
-    static CURVE_Gy: BIG;
-    static CURVE_W: [BIG; 2];
-    static CURVE_SB: [[BIG; 2]; 2];
-    static CURVE_WB: [BIG; 4];
-    static CURVE_BB: [[BIG; 4]; 4];
+    pub static MConst: chunk;
+    pub static Modulus: BIG;
+    pub static CURVE_Order: BIG;
+    pub static CURVE_Cof: BIG;
+    pub static CURVE_B: BIG;
+    pub static CURVE_Bnx: BIG;
+    pub static CURVE_Cru: BIG;
+    pub static CURVE_Fra: BIG;
+    pub static CURVE_Frb: BIG;
+    pub static CURVE_Pxa: BIG;
+    pub static CURVE_Pxb: BIG;
+    pub static CURVE_Pya: BIG;
+    pub static CURVE_Pyb: BIG;
+    pub static CURVE_Gx: BIG;
+    pub static CURVE_Gy: BIG;
+    pub static CURVE_W: [BIG; 2];
+    pub static CURVE_SB: [[BIG; 2]; 2];
+    pub static CURVE_WB: [BIG; 4];
+    pub static CURVE_BB: [[BIG; 4]; 4];
     // ^^^^^^^
     
     pub fn BIG_nbits(a: *const BIG) -> c_int;

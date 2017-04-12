@@ -23,12 +23,12 @@ impl Default for FP12 {
     }
 }
 
-/*
 extern {
-    pub fn qwe(qwe: asd) -> c_void;
+    pub fn FP12_output(w: *const FP12) -> c_void;
 }
 
 
+/*
 #[cfg(test)]
 mod tests {
     use super::*;

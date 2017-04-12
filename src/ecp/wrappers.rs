@@ -10,10 +10,10 @@ use big::wrappers::*;
 // Check amcl_build output!
 #[repr(C)]
 pub struct ECP {
-    inf: c_int,
-    x: BIG,
-    y: BIG,
-    z: BIG
+    pub inf: c_int,
+    pub x: BIG,
+    pub y: BIG,
+    pub z: BIG
 }
 
 impl Default for ECP {
@@ -27,12 +27,13 @@ impl Default for ECP {
     }
 }
 
-/*
 extern {
-    pub fn qwe(qwe: asd) -> c_void;
+    pub fn ECP_set(P: *mut ECP, x: *const BIG, y: *const BIG) -> c_void;
+    pub fn ECP_output(P: *const ECP) -> c_void;
 }
 
 
+/*
 #[cfg(test)]
 mod tests {
     use super::*;

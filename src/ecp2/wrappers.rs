@@ -8,10 +8,10 @@ use fp2::wrappers::FP2;
 
 #[repr(C)]
 pub struct ECP2 {
-    inf: c_int,
-    x: FP2,
-    y: FP2,
-    z: FP2
+    pub inf: c_int,
+    pub x: FP2,
+    pub y: FP2,
+    pub z: FP2
 }
 
 impl Default for ECP2 {
@@ -25,12 +25,13 @@ impl Default for ECP2 {
     }
 }
 
-/*
 extern {
-    pub fn qwe(qwe: asd) -> c_void;
+    pub fn ECP2_set(P: *mut ECP2, x: *const FP2, y: *const FP2) -> c_void;
+    pub fn ECP2_output(P: *const ECP2) -> c_void;
 }
 
 
+/*
 #[cfg(test)]
 mod tests {
     use super::*;

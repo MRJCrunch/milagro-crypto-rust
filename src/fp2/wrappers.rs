@@ -21,12 +21,11 @@ impl Default for FP2 {
     }
 }
 
-/*
 extern {
-    pub fn qwe(qwe: asd) -> c_void;
+    pub fn FP2_from_BIGs(w: *mut FP2, x: *const BIG, y: *const BIG) -> c_void;
 }
 
-
+/*
 #[cfg(test)]
 mod tests {
     use super::*;

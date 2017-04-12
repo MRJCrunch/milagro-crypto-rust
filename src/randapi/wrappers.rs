@@ -27,6 +27,12 @@ macro_rules! CSPRNG_INIT {
     };
 }
 
+impl Default for csprng {
+    fn default () -> csprng {
+        CSPRNG_INIT!()
+    }
+}
+
 impl csprng {
     pub fn new() -> csprng {
         CSPRNG_INIT!()
