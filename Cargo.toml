@@ -3,6 +3,8 @@ name = "milagro-crypto"
 version = "0.1.0"
 authors = ["Sergej Pupykin <sergej.pupykin@dsr-company.com>"]
 build="build.rs"
+license="APACHE2"
+description="milagro-crypto-c Rust wrappers. (c) Sovrin Fundation"
 
 [build-dependencies]
 pkg-config = "*"
