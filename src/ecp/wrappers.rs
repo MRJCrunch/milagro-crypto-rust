@@ -20,9 +20,9 @@ impl Default for ECP {
     fn default () -> ECP {
         ECP {
             inf: 0,
-            x: BIG_ZERO!(),
-            y: BIG_ZERO!(),
-            z: BIG_ZERO!()
+            x: BIG::default(),
+            y: BIG::default(),
+            z: BIG::default()
         }
     }
 }

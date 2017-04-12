@@ -7,7 +7,6 @@ use self::libc::{c_int, c_void, c_char, uint32_t};
 use std::mem;
 
 use big::wrappers::*;
-use randapi::wrappers::*;
 use fp2::wrappers::*;
 use fp4::wrappers::*;
 use fp12::wrappers::*;
@@ -25,13 +24,12 @@ mod tests {
 
     #[test]
     fn test_pair() {
-        let mut rng: csprng = Default::default();
-        let mut a: BIG = BIG_ZERO!();
-        let mut b: BIG = BIG_ZERO!();
-        let mut xa: BIG = BIG_ZERO!();
-        let mut xb: BIG = BIG_ZERO!();
-        let mut ya: BIG = BIG_ZERO!();
-        let mut yb: BIG = BIG_ZERO!();
+        let mut a: BIG = BIG::default();
+        let mut b: BIG = BIG::default();
+        let mut xa: BIG = BIG::default();
+        let mut xb: BIG = BIG::default();
+        let mut ya: BIG = BIG::default();
+        let mut yb: BIG = BIG::default();
 
         let mut P: ECP2 = Default::default();
         let mut G: ECP2 = Default::default();
@@ -102,7 +100,6 @@ mod tests {
             FP12_output(&g);
         }
         println!("");
-
-        assert_eq!(1, 1);
+        // no assert, segfault means test failed
     }
 }

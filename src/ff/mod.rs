@@ -2,6 +2,7 @@
 #![allow(non_upper_case_globals)]
 
 extern crate libc;
+
 use self::libc::{c_int};
 use std::fmt;
 use std::cmp;
@@ -27,7 +28,7 @@ impl FF {
         let len = cmp::max(n,2);
         let mut arr = Vec::<BIG>::with_capacity(len);
         for _ in 0..len {
-            arr.push(BIG_ZERO!());
+            arr.push(BIG::default());
         }
         FF {
             storage: arr
@@ -47,7 +48,7 @@ impl FF {
     pub fn set_size(&mut self, n: usize) -> &FF {
         let nn = cmp::max(2,n) - self.storage.len();
         for _ in 0..nn {
-            self.storage.push(BIG_ZERO!());
+            self.storage.push(BIG::default());
         }
         self
     }
@@ -515,11 +516,11 @@ mod tests {
     fn test_ff_set_size() {
         let mut x = FF::from_hex("3", 0);
         assert_eq!(x.set_size(5).to_hex(),
-                                "0000000000000000000000000000000000000000000000000000000000000000 \
-                                0000000000000000000000000000000000000000000000000000000000000000 \
-                                0000000000000000000000000000000000000000000000000000000000000000 \
-                                0000000000000000000000000000000000000000000000000000000000000000 \
-                                0000000000000000000000000000000000000000000000000000000000000003");
+                   "0000000000000000000000000000000000000000000000000000000000000000 \
+                    0000000000000000000000000000000000000000000000000000000000000000 \
+                    0000000000000000000000000000000000000000000000000000000000000000 \
+                    0000000000000000000000000000000000000000000000000000000000000000 \
+                    0000000000000000000000000000000000000000000000000000000000000003");
     }
 
     #[test]
@@ -617,4 +618,97 @@ mod tests {
         let y = x.clone();
         assert!(x == y);
     }
+
+
+
+
+
+/*
+    const BIG_SIZE: usize = 32;
+
+    pub fn generate_random_seed() -> [u8; 32] {
+        let seed: [u8; 32] = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+                               0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ];
+        seed
+    }
+
+    pub fn generate_big_random(size: usize) -> FF {
+        let seed = generate_random_seed();
+        let mut rng = Random::new(seed);
+
+        let b_size: usize = size / 8 + 1; // number of bytes for mod value
+        let big_size: usize = (b_size + MODBYTES - 1) / MODBYTES; // number of BIGs for mod value
+
+        // init mod bytes with 0 and set 1 in proper place
+        let mut bytes = vec![0; big_size * MODBYTES];
+        bytes[big_size * MODBYTES - b_size] = (1 as u8).wrapping_shl((size - (b_size - 1) * 8) as u32);
+
+        let bv = FF::from_bytes(&bytes[0..], big_size * MODBYTES, BIG_SIZE);
+        let r = FF::randomnum(&bv, &mut rng);
+        r
+    }
+
+    fn significant_bytes(n: &FF) -> Vec<u8> {
+        let mut bytes = n.to_bytes();
+        let length = bytes.len();
+        let index = bytes.iter().position(|&value| value != 0);
+        if let Some(index) = index {
+            bytes.reverse();
+            bytes.truncate(length - index);
+            bytes.reverse();
+        }
+        bytes
+    }
+
+    fn significant_bits(n: &FF) -> usize {
+        let bytes = significant_bytes(n);
+        let mut result = (bytes.len() - 1) * 8;
+        result += format!("{:b}", bytes[0]).len();
+        result
+    }
+
+    pub fn random_in_range(start: &FF, end: &FF) -> FF {
+        let sub = end - start;
+        let size = significant_bits(&sub);
+        let mut random_number = generate_big_random(size);
+
+        while (&random_number + start) > *end {
+            random_number = generate_big_random(size);
+        }
+
+        random_number = &random_number + start;
+        //debug!("start: {}\nend: {}\nsub: {}\nrandom: {}", start, end, sub, random_number);
+        random_number
+    }
+
+    #[test]
+    fn test_tmp() {
+        let p_prime = FF::from_hex(
+            "d1a2a65b9b574dd3e8416aa93f6d570adc2b5fc26925f78216225de6c882ebf431c5fec9d5fab1923709\
+             2699f3e1b31c94912926b5e7dd03983328465dffa76a6a227d6518632ac99ebf103e84f8e492e8e2ec37\
+             395f2f50b38753f3f3a529f80944cf84c2cc5534dae121bb1c65f62705882d279d18ff9d76a7f8d2546a\
+             3407", BIG_SIZE);
+        let q_prime = FF::from_hex(
+            "c15bb30a08c65b35f17f52c28c86f89f67e786cd87c57792c6dbddd5b9fb83cc38d56bed6b7f67f36e7f\
+             1f5df80b93d47be95ca3e11d79038cb23b8ce9809f3ecb79be259e5b65fb4d9317743f724a2c20673300\
+             baeb1bdaa532f3a2fe9c65f70e3834b3a51db5b6a0ed590ef52b86b4fd4db72ea9c439b2825003d33a49\
+             068b", BIG_SIZE);
+
+        let mut p = &p_prime * &FF::from_hex("2", BIG_SIZE);
+        p.inc(1);
+
+        let mut q = &q_prime * &FF::from_hex("2", BIG_SIZE);
+        q.inc(1);
+
+        let n = &p * &q;
+
+        println!("n :{}", n);
+        let mut random = random_in_range(&FF::from_hex("0", BIG_SIZE), &n);
+        println!("random :{}", random);
+        random = FF::sqr(&random);
+        println!("random sqr :{}", random);
+        let random1 = FF::modulus(&random, &n);
+        println!("random1 :{}", random1);
+    }
+*/
 }

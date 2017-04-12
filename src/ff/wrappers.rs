@@ -10,7 +10,7 @@ use big::wrappers::{BIG, NLEN, MODBYTES, big_to_hex};
 #[macro_export]
 macro_rules! FF_ZERO {
     ( $x:expr ) => {
-        [ BIG_ZERO!(); $x ];
+        [ BIG::default(); $x ];
     };
 }
 
@@ -82,7 +82,7 @@ mod tests {
             FF_sub(&mut z[0], &mut x[0], &mut y[0], 1);
             println!("3 * 3 + 3 - 3 = {}", ff_to_hex(&mut z, 1));
         }
-        assert_eq!(z[0][0], 9);
+        assert_eq!(z[0].val[0], 9);
     }
 
     #[test]

@@ -10,13 +10,16 @@ pub type chunk = int64_t;  // use amcl_build command to get this
 pub const MODBYTES:usize = 32; // use amcl_build command to get this
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-pub type BIG = [ chunk; NLEN ];
+pub struct BIG {
+    pub val: [ chunk; NLEN ]
+}
 
-#[macro_export]
-macro_rules! BIG_ZERO {
-    () => {
-        [ 0; NLEN ];
-    };
+impl Default for BIG {
+    fn default () -> BIG {
+        BIG {
+            val: [ 0; NLEN ]
+        }
+    }
 }
 
 extern {
@@ -46,11 +49,12 @@ extern {
     pub fn BIG_copy(d: *mut BIG, s: *const BIG) -> c_void;
     pub fn BIG_shr(a: *mut BIG, k: c_int) -> c_void;
     pub fn BIG_rcopy(b: *mut BIG, a: *const BIG) -> c_void;
+    pub fn BIG_comp(a: *const BIG, b: *const BIG) -> c_int;
 }
 
 pub fn big_to_hex(a: &BIG) -> String {
     let mut ret: String = String::with_capacity(MODBYTES*2);
-    let mut b: BIG = BIG_ZERO!();
+    let mut b: BIG = BIG::default();
     let mut len: usize;
 
     unsafe {
@@ -73,7 +77,7 @@ pub fn big_to_hex(a: &BIG) -> String {
             BIG_copy(&mut b, a);
             BIG_shr(&mut b, (i*4) as i32);
         }
-        ret.push_str(&format!("{:X}", b[0]&15));
+        ret.push_str(&format!("{:X}", b.val[0]&15));
     }
 
     return ret;
@@ -85,7 +89,7 @@ mod tests {
 
     #[test]
     fn test_hex() {
-        let a: BIG = BIG_ZERO!();
+        let a: BIG = BIG::default();
         assert_eq!(big_to_hex(&a), "0000000000000000000000000000000000000000000000000000000000000000");
     }
 }

@@ -15,8 +15,8 @@ pub struct FP2 {
 impl Default for FP2 {
     fn default () -> FP2 {
         FP2 {
-            a: BIG_ZERO!(),
-            b: BIG_ZERO!()
+            a: BIG::default(),
+            b: BIG::default()
         }
     }
 }
