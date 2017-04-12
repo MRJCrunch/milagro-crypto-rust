@@ -8,9 +8,9 @@ use fp4::wrappers::FP4;
 
 #[repr(C)]
 pub struct FP12 {
-    a: FP4,
-    b: FP4,
-    c: FP4
+    pub a: FP4,
+    pub b: FP4,
+    pub c: FP4
 }
 
 impl Default for FP12 {

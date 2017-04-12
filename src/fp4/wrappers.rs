@@ -8,8 +8,8 @@ use fp2::wrappers::FP2;
 
 #[repr(C)]
 pub struct FP4 {
-    a: FP2,
-    b: FP2
+    pub a: FP2,
+    pub b: FP2
 }
 
 impl Default for FP4 {

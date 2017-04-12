@@ -5,6 +5,7 @@ extern crate libc;
 use self::libc::{c_int};
 
 use std::cmp::Ordering;
+use std::fmt;
 use big::wrappers::*;
 
 impl Ord for BIG {
@@ -77,5 +78,17 @@ impl BIG {
             ret = BIG_comp(a, b) as i32;
         }
         return ret;
+    }
+}
+
+impl fmt::Display for BIG {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "BIG: [{}]", big_to_hex(self))
+    }
+}
+
+impl fmt::Debug for BIG {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "BIG: [{}]", big_to_hex(self))
     }
 }

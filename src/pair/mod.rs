@@ -75,7 +75,7 @@ mod tests {
             println!("G1 set success");
         }
 
-//        println!("Q={}", Q);
+        println!("Q={}", Q);
 
         BIG::rcopy(&mut xa, &CURVE_Pxa);
         BIG::rcopy(&mut xb, &CURVE_Pxb);
@@ -93,13 +93,13 @@ mod tests {
             println!("G2 set success");
         }
 
-//        println!("P={}", P);
+        println!("P={}", P);
 
         for _ in 0..1000 {
             PAIR::ate(&mut g, &mut P, &mut Q);
             PAIR::fexp(&mut g);
         }
-//        println!("g={}", g);
+        println!("g={}", g);
         // no assert, segfault means test failed
     }
 }

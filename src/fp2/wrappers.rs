@@ -8,8 +8,8 @@ use big::wrappers::*;
 
 #[repr(C)]
 pub struct FP2 {
-    a: BIG,
-    b: BIG
+    pub a: BIG,
+    pub b: BIG
 }
 
 impl Default for FP2 {
