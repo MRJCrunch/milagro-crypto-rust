@@ -79,6 +79,44 @@ impl BIG {
         }
         return ret;
     }
+
+    pub fn add(c: &mut BIG, a: &BIG, b: &BIG) {
+        unsafe {
+            BIG_add(c, a, b);
+        }
+    }
+
+    pub fn rmod(b: &mut BIG, c: &BIG) {
+        unsafe {
+            BIG_mod(b, c);
+        }
+    }
+
+    pub fn modmul(r: &mut BIG, a: &mut BIG, b: &mut BIG, m: &BIG) {
+        unsafe {
+            BIG_modmul(r, a, b, m);
+        }
+    }
+
+    pub fn modneg(r: &mut BIG, a: &mut BIG, m: &BIG) {
+        unsafe {
+            BIG_modneg(r, a, m);
+        }
+    }
+
+    pub fn toBytes(b: &mut [u8], a: &BIG) {
+        unsafe {
+            BIG_toBytes(&mut b[0], a);
+        }
+    }
+
+    pub fn fromBytes(b: &[u8]) -> BIG {
+        let mut ret: BIG = BIG::default();
+        unsafe {
+            BIG_fromBytes(&mut ret, b.as_ptr());
+        }
+        return ret;
+    }
 }
 
 impl fmt::Display for BIG {
@@ -90,5 +128,20 @@ impl fmt::Display for BIG {
 impl fmt::Debug for BIG {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "BIG: [{}]", big_to_hex(self))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_bytes() {
+        let mut bytes: [u8; MODBYTES] = [0; MODBYTES];
+        let mut outbytes: [u8; MODBYTES] = [0; MODBYTES];
+        bytes[0] = 0xFF;
+        let a: BIG = BIG::fromBytes(&bytes[..]);
+        BIG::toBytes(&mut outbytes[..], &a);
+        assert_eq!(bytes, outbytes);
     }
 }

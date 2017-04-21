@@ -2,7 +2,7 @@
 #![allow(non_upper_case_globals)]
 
 extern crate libc;
-use self::libc::{c_int, c_void, int64_t};
+use self::libc::{c_int, c_void, int64_t, c_char, uint8_t};
 
 // TODO: autogenerate this part!
 pub const NLEN:usize = 5;      // use amcl_build command to get this
@@ -44,12 +44,25 @@ extern {
     pub static CURVE_WB: [BIG; 4];
     pub static CURVE_BB: [[BIG; 4]; 4];
     // ^^^^^^^
-    
+
     pub fn BIG_nbits(a: *const BIG) -> c_int;
     pub fn BIG_copy(d: *mut BIG, s: *const BIG) -> c_void;
     pub fn BIG_shr(a: *mut BIG, k: c_int) -> c_void;
     pub fn BIG_rcopy(b: *mut BIG, a: *const BIG) -> c_void;
     pub fn BIG_comp(a: *const BIG, b: *const BIG) -> c_int;
+
+    // TODO:
+    //new_ints
+    //powmod
+    //inverse
+
+    pub fn BIG_add(c: *mut BIG, a: *const BIG, b: *const BIG) -> c_void;
+    pub fn BIG_mod(b: *mut BIG, c: *const BIG) -> c_void;
+    pub fn BIG_modmul(r: *mut BIG, a: *mut BIG, b: *mut BIG, m: *const BIG) -> c_void;
+    pub fn BIG_modneg(r: *mut BIG, a: *mut BIG, c: *const BIG) -> c_void;
+
+    pub fn BIG_toBytes(b: *mut uint8_t, a: *const BIG) -> c_void;
+    pub fn BIG_fromBytes(a: *mut BIG, b: *const uint8_t) -> c_void;
 }
 
 pub fn big_to_hex(a: &BIG) -> String {

@@ -6,6 +6,11 @@ use self::libc::{c_int, c_char, c_void, uint8_t, uint32_t};
 
 pub const NK:usize = 21; // See amcl.h
 
+// TODO:
+//new
+//clean
+//seed
+
 #[repr(C)]
 pub struct csprng {
      ira: [uint32_t; NK],
