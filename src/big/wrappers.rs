@@ -6,18 +6,37 @@ use self::libc::{c_int, c_void, int64_t, c_char, uint8_t};
 
 // TODO: autogenerate this part!
 pub const NLEN:usize = 5;      // use amcl_build command to get this
+pub const DNLEN:usize = 2*NLEN;
 pub type chunk = int64_t;  // use amcl_build command to get this
 pub const MODBYTES:usize = 32; // use amcl_build command to get this
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+pub const MBITS:usize = 254;
+pub const BASEBITS:usize = 56;
+pub const TBITS:usize = MBITS % BASEBITS;
+pub const OMASK: chunk = -( (1 as chunk) << TBITS);
+pub const FEXCESS:chunk = ((1 as chunk)<<(BASEBITS*(NLEN)-MBITS));
+
 pub struct BIG {
     pub val: [ chunk; NLEN ]
+}
+
+pub struct DBIG {
+    pub val: [ chunk; DNLEN ]
 }
 
 impl Default for BIG {
     fn default () -> BIG {
         BIG {
             val: [ 0; NLEN ]
+        }
+    }
+}
+
+impl Default for DBIG {
+    fn default () -> DBIG {
+        DBIG {
+            val: [ 0; DNLEN ]
         }
     }
 }
@@ -43,24 +62,25 @@ extern {
     pub static CURVE_SB: [[BIG; 2]; 2];
     pub static CURVE_WB: [BIG; 4];
     pub static CURVE_BB: [[BIG; 4]; 4];
+    pub static CURVE_A: c_int;
     // ^^^^^^^
 
+    pub fn BIG_sqr(c: *mut DBIG, a: *const BIG) -> c_void;
+    pub fn BIG_modsqr(r: *mut BIG, a: *const BIG, m: *const BIG) -> c_void;
+    pub fn BIG_fshr(a: *mut BIG, k: c_int) -> c_int;
+    pub fn BIG_fshl(a: *mut BIG, k: c_int) -> c_int;
     pub fn BIG_nbits(a: *const BIG) -> c_int;
     pub fn BIG_copy(d: *mut BIG, s: *const BIG) -> c_void;
     pub fn BIG_shr(a: *mut BIG, k: c_int) -> c_void;
     pub fn BIG_rcopy(b: *mut BIG, a: *const BIG) -> c_void;
     pub fn BIG_comp(a: *const BIG, b: *const BIG) -> c_int;
-
-    // TODO:
-    //new_ints
-    //powmod
-    //inverse
-
     pub fn BIG_add(c: *mut BIG, a: *const BIG, b: *const BIG) -> c_void;
     pub fn BIG_mod(b: *mut BIG, c: *const BIG) -> c_void;
-    pub fn BIG_modmul(r: *mut BIG, a: *mut BIG, b: *mut BIG, m: *const BIG) -> c_void;
+    pub fn BIG_modmul(r: *mut BIG, a: *const BIG, b: *const BIG, m: *const BIG) -> c_void;
     pub fn BIG_modneg(r: *mut BIG, a: *mut BIG, c: *const BIG) -> c_void;
-
+    pub fn BIG_mul(c: *mut DBIG, a: *const BIG, b: *const BIG) -> c_void;
+    pub fn BIG_imul(r: *mut BIG, a: *const BIG, c: c_int) -> c_void;
+    pub fn BIG_norm(a: *mut BIG) -> chunk;
     pub fn BIG_toBytes(b: *mut uint8_t, a: *const BIG) -> c_void;
     pub fn BIG_fromBytes(a: *mut BIG, b: *const uint8_t) -> c_void;
 }

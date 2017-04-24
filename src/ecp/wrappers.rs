@@ -32,9 +32,6 @@ extern {
     pub fn ECP_set(P: *mut ECP, x: *const BIG, y: *const BIG) -> c_void;
     pub fn ECP_output(P: *const ECP) -> c_void;
 
-    // TODO:
-    //new_bigs
-
     pub fn ECP_mul(P: *mut ECP, e: *const BIG) -> c_void;
     pub fn ECP_add(P: *mut ECP, Q: *const ECP, W: *const ECP) -> c_void;
     pub fn ECP_toOctet(W: *mut octet, P: *const ECP) -> c_void;
