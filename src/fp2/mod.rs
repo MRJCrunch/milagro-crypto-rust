@@ -14,6 +14,13 @@ impl FP2 {
     }
 }
 
+impl PartialEq for FP2 {
+    fn eq(&self, other: &FP2) -> bool {
+        return (self.a == other.a) &&
+            (self.b == other.b);
+    }
+}
+
 impl Copy for FP2 { }
 
 impl Clone for FP2 {

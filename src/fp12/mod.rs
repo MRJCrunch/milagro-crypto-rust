@@ -43,6 +43,14 @@ impl FP12 {
     }
 }
 
+impl PartialEq for FP12 {
+    fn eq(&self, other: &FP12) -> bool {
+        return (self.a == other.a) &&
+            (self.b == other.b) &&
+            (self.c == other.c);
+    }
+}
+
 impl Copy for FP12 { }
 
 impl Clone for FP12 {
@@ -64,5 +72,17 @@ impl fmt::Display for FP12 {
 impl fmt::Debug for FP12 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "FP12: [ {}, {}, {} ]", self.a, self.b, self.c)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_eq() {
+        let fp1 = FP12::default();
+        let fp2 = FP12::default();
+        assert_eq!(fp1, fp2);
     }
 }

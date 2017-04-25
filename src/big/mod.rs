@@ -25,7 +25,7 @@ impl Ord for BIG {
     }
 }
 
-impl Eq for BIG {}
+impl Eq for BIG { }
 
 impl PartialOrd for BIG {
     fn partial_cmp(&self, other: &BIG) -> Option<Ordering> {
@@ -35,7 +35,7 @@ impl PartialOrd for BIG {
 
 impl PartialEq for BIG {
     fn eq(&self, other: &BIG) -> bool {
-        self.val == other.val
+        return self.cmp(other) == Ordering::Equal;
     }
 }
 
@@ -85,12 +85,12 @@ impl BIG {
         return (a.val[0]%2) as isize;
     }
 
-    pub fn powmod(a: &mut BIG, e: &mut BIG, m: &BIG) -> BIG {
-        BIG::norm(a);
+    pub fn powmod(x: &mut BIG, e: &mut BIG, m: &BIG) -> BIG {
+        BIG::norm(x);
         BIG::norm(e);
         let mut a=BIG::new_int(1);
         let mut z=BIG::new_copy(e);
-        let mut s=BIG::new_copy(&a);
+        let mut s=BIG::new_copy(x);
         loop {
             let bt=BIG::parity(&z);
             BIG::fshr(&mut z, 1);

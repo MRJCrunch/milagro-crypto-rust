@@ -108,6 +108,15 @@ impl ECP {
     }
 }
 
+impl PartialEq for ECP {
+    fn eq(&self, other: &ECP) -> bool {
+        return (self.inf == other.inf) &&
+            (self.x == other.x) &&
+            (self.y == other.y) &&
+            (self.z == other.z);
+    }
+}
+
 impl Copy for ECP { }
 
 impl Clone for ECP {
@@ -130,5 +139,20 @@ impl fmt::Display for ECP {
 impl fmt::Debug for ECP {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "ECP: [ {}, {}, {}, {} ]", self.inf, self.x, self.y, self.z)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_eq() {
+        let ecp1 = ECP::default();
+        let ecp2 = ECP::default();
+        let mut ecp3 = ECP::default();
+        ecp3.inf = 1;
+        assert_eq!(ecp1, ecp2);
+        assert_ne!(ecp1, ecp3);
     }
 }

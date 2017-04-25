@@ -5,6 +5,13 @@ extern crate libc;
 use std::fmt;
 use fp4::wrappers::*;
 
+impl PartialEq for FP4 {
+    fn eq(&self, other: &FP4) -> bool {
+        return (self.a == other.a) &&
+            (self.b == other.b);
+    }
+}
+
 impl Copy for FP4 { }
 
 impl Clone for FP4 {
