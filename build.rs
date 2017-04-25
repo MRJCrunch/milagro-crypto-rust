@@ -12,7 +12,7 @@ fn main() {
     let src = Path::new(&cargo_dir[..]);
     let dst = Path::new(&output_dir[..]);
 
-    let libs = vec!["libamcl_curve", "libamcl_core"];
+    let libs = vec!["libamcl_pairing", "libamcl_ecc", "libamcl_curve", "libamcl_core"];
 
     let mut found = true;
     for l in libs {
@@ -86,7 +86,11 @@ fn main() {
         .arg(&format!("DESTDIR={}", dst.join("pkg").to_str().unwrap()))
         .current_dir(&dst.join("build")));
 
-    println!("cargo:rustc-flags=-L {}/lib -l amcl_curve -l amcl_core", dst.join("pkg").display());
+    println!("cargo:rustc-flags=-L {}/lib \
+              -l amcl_pairing \
+              -l amcl_ecc \
+              -l amcl_curve \
+              -l amcl_core", dst.join("pkg").display());
     println!("cargo:root={}", dst.join("pkg").display());
     println!("cargo:include={}/include", dst.join("pkg").display());
 }
