@@ -43,6 +43,18 @@ impl FP12 {
     }
 }
 
+impl Copy for FP12 { }
+
+impl Clone for FP12 {
+    fn clone(&self) -> FP12 {
+        FP12 {
+            a: self.a,
+            b: self.b,
+            c: self.c
+        }
+    }
+}
+
 impl fmt::Display for FP12 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "FP12: [ {}, {}, {} ]", self.a, self.b, self.c)

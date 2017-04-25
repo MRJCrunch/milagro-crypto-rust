@@ -14,6 +14,17 @@ impl FP2 {
     }
 }
 
+impl Copy for FP2 { }
+
+impl Clone for FP2 {
+    fn clone(&self) -> FP2 {
+        FP2 {
+            a: self.a,
+            b: self.b
+        }
+    }
+}
+
 impl fmt::Display for FP2 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "FP2: [ {}, {} ]", self.a, self.b)
