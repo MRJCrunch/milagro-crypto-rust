@@ -11,6 +11,7 @@ use self::libc::{c_int};
 use std::cmp::Ordering;
 use std::fmt;
 use big::wrappers::*;
+use randapi::Random;
 
 impl Ord for BIG {
     fn cmp(&self, other: &BIG) -> Ordering {
@@ -83,6 +84,21 @@ impl BIG {
 
     pub fn parity(a: &BIG) -> isize {
         return (a.val[0]%2) as isize;
+    }
+
+    pub fn shl(&mut self, k: usize) {
+	let n=k%BASEBITS;
+	let m=k/BASEBITS;
+
+	self.val[NLEN-1]=self.val[NLEN-1-m]<<n;
+	if NLEN>=m+2 {self.val[NLEN-1]|=self.val[NLEN-m-2]>>(BASEBITS-n)}
+	for i in (m+1 ..NLEN-1).rev() {
+	    self.val[i]=((self.val[i-m]<<n)&BMASK)|(self.val[i-m-1]>>(BASEBITS-n));
+	}
+	self.val[m]=(self.val[0]<<n)&BMASK;
+	for i in 0 ..m {
+            self.val[i]=0;
+        }
     }
 
     pub fn powmod(x: &mut BIG, e: &mut BIG, m: &BIG) -> BIG {
@@ -303,6 +319,27 @@ impl BIG {
         }
     }
 
+    pub fn randomnum(q: &BIG, rng: &mut Random) -> BIG {
+        let mut d=BIG::default();
+        let mut j=0;
+        let mut r:u8=0;
+        let t=BIG::new_copy(q);
+        for _ in 0..2*BIG::nbits(&t) {
+            if j==0 {
+                r=rng.getbyte();
+            } else {
+                r>>=1;
+            }
+            let b= (r as chunk)&1;
+            d.shl(1);
+            d.val[0]+=b;
+            j+=1;
+            j&=7;
+        }
+        BIG::rmod(&mut d, &q);
+        return d;
+    }
+
     pub fn toBytes(b: &mut [u8], a: &BIG) {
         unsafe {
             BIG_toBytes(&mut b[0], a);
@@ -334,6 +371,11 @@ impl fmt::Debug for BIG {
 mod tests {
     use super::*;
 
+    const SEED: [u8; 32] = [ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                             0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00,
+                             0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                             0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02 ];
+
     #[test]
     fn test_bytes() {
         let mut bytes: [u8; MODBYTES] = [0; MODBYTES];
@@ -342,5 +384,13 @@ mod tests {
         let a: BIG = BIG::fromBytes(&bytes[..]);
         BIG::toBytes(&mut outbytes[..], &a);
         assert_eq!(bytes, outbytes);
+    }
+
+    #[test]
+    fn test_big_random() {
+        let mut rng = Random::new(SEED);
+        let m = BIG::new_int(0x1000000);
+        let r = BIG::randomnum(&m, &mut rng);
+        println!("big_random={}", r);
     }
 }

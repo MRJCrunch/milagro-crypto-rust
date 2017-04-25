@@ -6,11 +6,6 @@ use self::libc::{c_int, c_char, c_void, uint8_t, uint32_t};
 
 pub const NK:usize = 21; // See amcl.h
 
-// TODO:
-//new
-//clean
-//seed
-
 #[repr(C)]
 pub struct csprng {
      ira: [uint32_t; NK],
@@ -64,6 +59,7 @@ impl<'l> octet<'l> {
 extern {
     pub fn CREATE_CSPRNG(R: *mut csprng, S: *mut octet) -> c_void;
     pub fn KILL_CSPRNG(R: *mut csprng) -> c_void;
+    pub fn RAND_byte(rng: *mut csprng) -> c_int;
 }
 
 

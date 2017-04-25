@@ -14,8 +14,9 @@ pub const MODBYTES:usize = 32; // use amcl_build command to get this
 pub const MBITS:usize = 254;
 pub const BASEBITS:usize = 56;
 pub const TBITS:usize = MBITS % BASEBITS;
+pub const BMASK: chunk =  ( (1 as chunk) << BASEBITS) - 1;
 pub const OMASK: chunk = -( (1 as chunk) << TBITS);
-pub const FEXCESS:chunk = ((1 as chunk)<<(BASEBITS*(NLEN)-MBITS));
+pub const FEXCESS:chunk = ( (1 as chunk) << (BASEBITS*(NLEN)-MBITS));
 
 #[repr(C)]
 pub struct BIG {

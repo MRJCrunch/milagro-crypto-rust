@@ -3,6 +3,9 @@
 
 pub mod wrappers;
 
+extern crate libc;
+use self::libc::{c_int};
+
 use randapi::wrappers::*;
 
 pub struct Random {
@@ -19,6 +22,14 @@ impl Random {
         Random {
             rng: ret
         }
+    }
+
+    pub fn getbyte(&mut self) -> u8 {
+        let r: c_int;
+        unsafe {
+            r = RAND_byte(&mut self.rng);
+        }
+        return r as u8;
     }
 }
 
