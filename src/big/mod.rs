@@ -190,6 +190,14 @@ impl BIG {
         return r;
     }
 
+    pub fn sub(a: &BIG, b: &BIG) -> BIG {
+        let mut r = BIG::default();
+        unsafe {
+            BIG_sub(&mut r, a, b);
+        }
+        return r;
+    }
+
     pub fn rmod(b: &mut BIG, c: &BIG) {
         unsafe {
             BIG_mod(b, c);

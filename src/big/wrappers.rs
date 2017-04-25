@@ -78,6 +78,7 @@ extern {
     pub fn BIG_rcopy(b: *mut BIG, a: *const BIG) -> c_void;
     pub fn BIG_comp(a: *const BIG, b: *const BIG) -> c_int;
     pub fn BIG_add(c: *mut BIG, a: *const BIG, b: *const BIG) -> c_void;
+    pub fn BIG_sub(c: *mut BIG, a: *const BIG, b: *const BIG) -> c_void;
     pub fn BIG_mod(b: *mut BIG, c: *const BIG) -> c_void;
     pub fn BIG_modmul(r: *mut BIG, a: *const BIG, b: *const BIG, m: *const BIG) -> c_void;
     pub fn BIG_modneg(r: *mut BIG, a: *mut BIG, c: *const BIG) -> c_void;
