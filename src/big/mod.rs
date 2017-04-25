@@ -52,6 +52,14 @@ impl BIG {
         return s;
     }
 
+    pub fn new_ints(a:&[chunk]) -> BIG {
+        let mut s= BIG::default();
+        for i in 0..NLEN {
+            s.val[i]=a[i];
+        }
+        return s;
+    }
+
     pub fn new_copy(y:&BIG) -> BIG {
         let mut s= BIG::default();
         for i in 0..NLEN {
@@ -60,32 +68,32 @@ impl BIG {
         return s;
     }
 
-    pub fn iszilch(&self) -> bool {
+    pub fn iszilch(a: &BIG) -> bool {
         for i in 0 ..NLEN {
-            if self.val[i]!=0 {
+            if a.val[i]!=0 {
                 return false;
             }
         }
         return true;
     }
 
-    pub fn parity(&self) -> isize {
-        return (self.val[0]%2) as isize;
+    pub fn parity(a: &BIG) -> isize {
+        return (a.val[0]%2) as isize;
     }
 
-    pub fn powmod(&mut self, e: &mut BIG,m: &BIG) -> BIG {
-        self.norm();
-        e.norm();
+    pub fn powmod(a: &mut BIG, e: &mut BIG, m: &BIG) -> BIG {
+        BIG::norm(a);
+        BIG::norm(e);
         let mut a=BIG::new_int(1);
         let mut z=BIG::new_copy(e);
-        let mut s=BIG::new_copy(self);
+        let mut s=BIG::new_copy(&a);
         loop {
-            let bt=z.parity();
-            z.fshr(1);
+            let bt=BIG::parity(&z);
+            BIG::fshr(&mut z, 1);
             if bt==1 {
                 a = BIG::modmul(&a, &s, m);
             }
-            if z.iszilch() {break}
+            if BIG::iszilch(&z) {break}
             s = BIG::modsqr(&s, m);
         }
         return a;
@@ -99,31 +107,39 @@ impl BIG {
         return ret;
     }
 
-    pub fn reduce(&mut self) {
+    pub fn reduce(a: &mut BIG) {
         let p = Modulus;
-        BIG::rmod(self, &p);
+        BIG::rmod(a, &p);
     }
 
-    pub fn norm(&mut self) -> chunk {
+    pub fn norm(a: &mut BIG) -> chunk {
         let mut ret;
         unsafe {
-            ret = BIG_norm(self) as chunk;
+            ret = BIG_norm(a) as chunk;
         }
         return ret;
     }
 
-    pub fn fshr(&mut self, k: i32) -> i32 {
-        let mut ret;
+    pub fn invmodp(a: &BIG, p: &BIG) -> BIG {
+        let mut ret = BIG::default();
         unsafe {
-            ret = BIG_fshr(self, k as c_int) as i32;
+            BIG_invmodp(&mut ret, a, p);
         }
         return ret;
     }
 
-    pub fn fshl(&mut self, k: i32) -> i32 {
+    pub fn fshr(a: &mut BIG, k: i32) -> i32 {
         let mut ret;
         unsafe {
-            ret = BIG_fshl(self, k as c_int) as i32;
+            ret = BIG_fshr(a, k as c_int) as i32;
+        }
+        return ret;
+    }
+
+    pub fn fshl(a: &mut BIG, k: i32) -> i32 {
+        let mut ret;
+        unsafe {
+            ret = BIG_fshl(a, k as c_int) as i32;
         }
         return ret;
     }
@@ -184,17 +200,17 @@ impl BIG {
         return r;
     }
 
-    pub fn sqrm(&mut self) {
-        let r: DBIG = BIG::sqr(self);
+    pub fn sqrm(a: &mut BIG) {
+        let r: DBIG = BIG::sqr(a);
         for i in 0..NLEN {
-            self.val[i] = r.val[i];
+            a.val[i] = r.val[i];
         }
     }
 
-    pub fn one(&mut self) {
-        self.val[0]=1;
+    pub fn one(a: &mut BIG) {
+        a.val[0]=1;
         for i in 1 ..NLEN {
-            self.val[i]=0;
+            a.val[i]=0;
         }
     }
 
@@ -258,20 +274,20 @@ impl BIG {
         return r+1;
     }
 
-    pub fn neg(&mut self) {
+    pub fn neg(a: &mut BIG) {
         let mut p = Modulus;
-        self.norm();
-        let sb = BIG::logb2(BIG::excess(&self) as u32);
+        BIG::norm(a);
+        let sb = BIG::logb2(BIG::excess(a) as u32);
         BIG::fshl(&mut p, sb as i32);
-        self.rsub(&p);
-        if BIG::excess(&self)>=FEXCESS {
-            self.reduce();
+        BIG::rsub(a, &p);
+        if BIG::excess(a)>=FEXCESS {
+            BIG::reduce(a);
         }
     }
 
-    pub fn rsub(&mut self, x:&BIG) {
+    pub fn rsub(a: &mut BIG, x:&BIG) {
         for i in 0 ..NLEN {
-            self.val[i]=x.val[i]-self.val[i]
+            a.val[i]=x.val[i]-a.val[i]
         }
     }
 

@@ -65,6 +65,7 @@ extern {
     pub static CURVE_A: c_int;
     // ^^^^^^^
 
+    pub fn BIG_invmodp(r: *mut BIG, a: *const BIG,p: *const BIG) -> c_void;
     pub fn BIG_sqr(c: *mut DBIG, a: *const BIG) -> c_void;
     pub fn BIG_modsqr(r: *mut BIG, a: *const BIG, m: *const BIG) -> c_void;
     pub fn BIG_fshr(a: *mut BIG, k: c_int) -> c_int;
