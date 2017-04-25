@@ -1,9 +1,6 @@
 #![allow(non_camel_case_types)]
 #![allow(non_upper_case_globals)]
 
-extern crate libc;
-use self::libc::{c_int, c_void, c_char, uint32_t};
-
 use fp2::wrappers::FP2;
 
 #[repr(C)]

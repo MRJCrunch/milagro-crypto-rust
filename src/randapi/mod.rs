@@ -41,7 +41,7 @@ mod tests {
 
     #[test]
     fn test_random() {
-        let r = Random::new(SEED);
+        Random::new(SEED);
         // no assert, segfault means test failed
     }
 }

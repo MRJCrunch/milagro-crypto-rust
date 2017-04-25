@@ -1,3 +1,7 @@
+#![allow(non_camel_case_types)]
+#![allow(non_upper_case_globals)]
+#![allow(non_snake_case)]
+
 #[macro_use]
 pub mod wrappers;
 
@@ -100,7 +104,7 @@ impl BIG {
     }
 
     pub fn nbits(a: &BIG) -> i32 {
-        let mut ret;
+        let ret;
         unsafe {
             ret = BIG_nbits(a) as i32;
         }
@@ -108,12 +112,12 @@ impl BIG {
     }
 
     pub fn reduce(a: &mut BIG) {
-        let p = Modulus;
+        let p = unsafe { Modulus };
         BIG::rmod(a, &p);
     }
 
     pub fn norm(a: &mut BIG) -> chunk {
-        let mut ret;
+        let ret;
         unsafe {
             ret = BIG_norm(a) as chunk;
         }
@@ -129,7 +133,7 @@ impl BIG {
     }
 
     pub fn fshr(a: &mut BIG, k: i32) -> i32 {
-        let mut ret;
+        let ret;
         unsafe {
             ret = BIG_fshr(a, k as c_int) as i32;
         }
@@ -137,7 +141,7 @@ impl BIG {
     }
 
     pub fn fshl(a: &mut BIG, k: i32) -> i32 {
-        let mut ret;
+        let ret;
         unsafe {
             ret = BIG_fshl(a, k as c_int) as i32;
         }
@@ -163,7 +167,7 @@ impl BIG {
     }
 
     pub fn comp(a: &BIG, b: &BIG) -> i32 {
-        let mut ret;
+        let ret;
         unsafe {
             ret = BIG_comp(a, b) as i32;
         }
@@ -275,7 +279,7 @@ impl BIG {
     }
 
     pub fn neg(a: &mut BIG) {
-        let mut p = Modulus;
+        let mut p = unsafe { Modulus };
         BIG::norm(a);
         let sb = BIG::logb2(BIG::excess(a) as u32);
         BIG::fshl(&mut p, sb as i32);

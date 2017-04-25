@@ -2,13 +2,8 @@
 #![allow(non_upper_case_globals)]
 
 extern crate libc;
-use self::libc::{c_int, c_void, c_char, uint32_t};
+use self::libc::{c_void};
 
-use std::mem;
-
-use big::wrappers::*;
-use fp2::wrappers::*;
-use fp4::wrappers::*;
 use fp12::wrappers::*;
 use ecp::wrappers::*;
 use ecp2::wrappers::*;
@@ -21,6 +16,8 @@ extern {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use big::wrappers::*;
+    use fp2::wrappers::*;
 
     #[test]
     fn test_pair() {
@@ -32,10 +29,10 @@ mod tests {
         let mut yb: BIG = BIG::default();
 
         let mut P: ECP2 = Default::default();
-        let mut G: ECP2 = Default::default();
+//        let G: ECP2 = Default::default();
 
         let mut Q: ECP = Default::default();
-        let mut R: ECP = Default::default();
+//        let R: ECP = Default::default();
 
         let mut g: FP12 = Default::default();
 

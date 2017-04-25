@@ -2,7 +2,7 @@
 #![allow(non_upper_case_globals)]
 
 extern crate libc;
-use self::libc::{c_int, c_void, c_char, uint32_t};
+use self::libc::{c_void };
 
 use big::wrappers::*;
 

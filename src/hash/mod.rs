@@ -20,8 +20,8 @@ impl hash256 {
         }
     }
 
-    pub fn hash(&mut self) -> Vec<i8> {
-        let mut ret: Vec<i8> = vec![0; 32];
+    pub fn hash(&mut self) -> Vec<u8> {
+        let mut ret: Vec<u8> = vec![0; 32];
         unsafe {
             HASH256_hash(self, &mut ret.as_mut_slice()[0]);
         }
@@ -35,7 +35,7 @@ mod tests {
 
     #[test]
     fn test_sha256() {
-        let golden: Vec<i8> = vec![ 0x02, 0x1f, 0xb5, 0x96, 0xdb, 0x81, 0xe6, 0xd0,
+        let golden: Vec<u8> = vec![ 0x02, 0x1f, 0xb5, 0x96, 0xdb, 0x81, 0xe6, 0xd0,
                                     0x2b, 0xf3, 0xd2, 0x58, 0x6e, 0xe3, 0x98, 0x1f,
                                     0xe5, 0x19, 0xf2, 0x75, 0xc0, 0xac, 0x9c, 0xa7,
                                     0x6b, 0xbc, 0xf2, 0xeb, 0xb4, 0x09, 0x7d, 0x96 ];

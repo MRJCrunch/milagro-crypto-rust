@@ -2,7 +2,7 @@
 #![allow(non_upper_case_globals)]
 
 extern crate libc;
-use self::libc::{c_int, c_void, int64_t, c_char, uint8_t};
+use self::libc::{c_int, c_void, int64_t, uint8_t};
 
 // TODO: autogenerate this part!
 pub const NLEN:usize = 5;      // use amcl_build command to get this
@@ -17,10 +17,12 @@ pub const TBITS:usize = MBITS % BASEBITS;
 pub const OMASK: chunk = -( (1 as chunk) << TBITS);
 pub const FEXCESS:chunk = ((1 as chunk)<<(BASEBITS*(NLEN)-MBITS));
 
+#[repr(C)]
 pub struct BIG {
     pub val: [ chunk; NLEN ]
 }
 
+#[repr(C)]
 pub struct DBIG {
     pub val: [ chunk; DNLEN ]
 }

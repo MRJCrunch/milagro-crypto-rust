@@ -1,22 +1,13 @@
+#![allow(non_snake_case)]
+
 pub mod wrappers;
 
 extern crate libc;
-use self::libc::{c_int};
 
-use big::wrappers::*;
-use fp2::wrappers::*;
-use fp4::wrappers::*;
 use fp12::wrappers::*;
 use ecp::wrappers::*;
 use ecp2::wrappers::*;
 use pair::wrappers::*;
-
-use big::*;
-use fp2::*;
-use fp4::*;
-use fp12::*;
-use ecp::*;
-use ecp2::*;
 
 pub struct PAIR {
 }
@@ -38,6 +29,8 @@ impl PAIR {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use big::wrappers::*;
+    use fp2::wrappers::*;
 
     #[test]
     fn test_pair() {
@@ -49,10 +42,10 @@ mod tests {
         let mut yb: BIG = BIG::default();
 
         let mut P: ECP2 = Default::default();
-        let mut G: ECP2 = Default::default();
+//        let G: ECP2 = Default::default();
 
         let mut Q: ECP = Default::default();
-        let mut R: ECP = Default::default();
+//        let R: ECP = Default::default();
 
         let mut g: FP12 = Default::default();
 
@@ -60,12 +53,12 @@ mod tests {
         let mut y: FP2 = Default::default();
         let mut X: FP2 = Default::default();
 
-        BIG::rcopy(&mut a, &CURVE_Fra);
-        BIG::rcopy(&mut b, &CURVE_Frb);
+        BIG::rcopy(&mut a, unsafe { &CURVE_Fra });
+        BIG::rcopy(&mut b, unsafe { &CURVE_Frb });
         FP2::from_BIGs(&mut X, &a, &b);
 
-        BIG::rcopy(&mut xa, &CURVE_Gx);
-        BIG::rcopy(&mut ya, &CURVE_Gy);
+        BIG::rcopy(&mut xa, unsafe { &CURVE_Gx} );
+        BIG::rcopy(&mut ya, unsafe { &CURVE_Gy });
 
         ECP::set(&mut Q, &xa, &ya);
 
@@ -77,10 +70,10 @@ mod tests {
 
         println!("Q={}", Q);
 
-        BIG::rcopy(&mut xa, &CURVE_Pxa);
-        BIG::rcopy(&mut xb, &CURVE_Pxb);
-        BIG::rcopy(&mut ya, &CURVE_Pya);
-        BIG::rcopy(&mut yb, &CURVE_Pyb);
+        BIG::rcopy(&mut xa, unsafe { &CURVE_Pxa });
+        BIG::rcopy(&mut xb, unsafe { &CURVE_Pxb });
+        BIG::rcopy(&mut ya, unsafe { &CURVE_Pya });
+        BIG::rcopy(&mut yb, unsafe { &CURVE_Pyb });
 
         FP2::from_BIGs(&mut x, &xa, &xb);
         FP2::from_BIGs(&mut y, &ya, &yb);

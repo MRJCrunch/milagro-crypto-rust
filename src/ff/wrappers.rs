@@ -2,10 +2,10 @@
 #![allow(non_upper_case_globals)]
 
 extern crate libc;
-use self::libc::{c_int, c_void, uint8_t, uint32_t, int64_t};
+use self::libc::{c_int, c_void};
 
 use randapi::wrappers::{csprng, octet};
-use big::wrappers::{BIG, NLEN, MODBYTES, big_to_hex};
+use big::wrappers::{BIG, MODBYTES, big_to_hex};
 
 #[macro_export]
 macro_rules! FF_ZERO {
@@ -52,6 +52,7 @@ pub fn ff_to_hex(x: &mut [BIG], n: c_int) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use self::libc::{uint8_t};
 
     #[test]
     fn test_ops() {

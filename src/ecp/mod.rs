@@ -1,7 +1,8 @@
+#![allow(non_snake_case)]
+
 pub mod wrappers;
 
 extern crate libc;
-use self::libc::{c_int};
 
 use std::fmt;
 use big::wrappers::*;
@@ -40,9 +41,9 @@ impl ECP {
         BIG::sqrm(&mut r);
 
         // KLUDGE: depends on CURVETYPE milagro define. This is "CURVETYPE: WEIERSTRASS"
-        let b = CURVE_B;
+        let b = unsafe { CURVE_B };
         r = BIG::mulm(&r, &x);
-        if CURVE_A == -3 {
+        if unsafe { CURVE_A } == -3 {
             let mut cx=x.clone();
             cx = BIG::imul(&cx, 3);
             BIG::neg(&mut cx);
@@ -54,12 +55,32 @@ impl ECP {
         return r;
     }
 
+    pub fn is_infinity(a: &ECP) -> bool {
+        // KLUDGE: depends on CURVETYPE milagro define. This is "CURVETYPE: WEIERSTRASS"
+        return a.inf != 0;
+    }
+
+    pub fn neg(P: &mut ECP) {
+	if ECP::is_infinity(P) {
+            return;
+        }
+        // KLUDGE: depends on CURVETYPE milagro define. This is "CURVETYPE: WEIERSTRASS"
+	BIG::neg(&mut P.y);
+        BIG::norm(&mut P.y);
+    }
+
+    pub fn sub(P: &mut ECP, Q:&ECP) {
+        unsafe {
+            ECP_sub(P, Q);
+        }
+    }
+
     pub fn new_bigs(ix: &BIG,iy: &BIG) -> ECP {
         let mut E=ECP::default();
         E.x = ix.clone();
         E.y = iy.clone();
         BIG::one(&mut E.z);
-        let mut rhs=ECP::rhs(&mut E.x);
+        let rhs=ECP::rhs(&mut E.x);
 
         // KLUDGE: depends on CURVETYPE milagro define. This is "CURVETYPE: WEIERSTRASS"
         let mut y2=BIG::new_copy(&E.y);
@@ -84,6 +105,19 @@ impl ECP {
             ECP_fromOctet(&mut ret, W);
         }
         return ret;
+    }
+}
+
+impl Copy for ECP { }
+
+impl Clone for ECP {
+    fn clone(&self) -> ECP {
+        ECP {
+            inf: self.inf,
+            x: self.x,
+            y: self.y,
+            z: self.z
+        }
     }
 }
 

@@ -1,7 +1,8 @@
+#![allow(non_snake_case)]
+
 pub mod wrappers;
 
 extern crate libc;
-use self::libc::{c_int};
 
 use std::fmt;
 use big::wrappers::BIG;

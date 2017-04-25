@@ -1,7 +1,6 @@
-pub mod wrappers;
+#![allow(non_snake_case)]
 
-extern crate libc;
-use self::libc::{c_int};
+pub mod wrappers;
 
 use std::fmt;
 use big::wrappers::*;

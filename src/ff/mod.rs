@@ -1,5 +1,6 @@
 #![allow(non_camel_case_types)]
 #![allow(non_upper_case_globals)]
+#![allow(non_snake_case)]
 
 extern crate libc;
 
@@ -10,7 +11,7 @@ use std::cmp;
 pub mod wrappers;
 pub mod overloading;
 
-use big::wrappers::{BIG, NLEN, MODBYTES};
+use big::wrappers::{BIG, MODBYTES};
 use randapi::wrappers::{octet};
 use ff::wrappers::*;
 use randapi::Random;
@@ -461,7 +462,7 @@ mod tests {
     fn test_ff_pow() {
         let x = FF::from_hex("3", 0);
         let e = FF::from_hex("20", 0);
-        let mut p = FF::from_hex("10000", 0);
+        let p = FF::from_hex("10000", 0);
         let z = FF::pow(&x, &e, &p);
         let str = z.to_hex();
         println!("ff_modulus: str = {}", str);
@@ -526,8 +527,8 @@ mod tests {
     #[test]
     fn test_ff_is_prime() {
         let mut rng = Random::new(SEED);
-        let mut bp = FF::from_hex("7FFFFFFF", 0);
-        let mut bn = FF::from_hex("4", 0);
+        let bp = FF::from_hex("7FFFFFFF", 0);
+        let bn = FF::from_hex("4", 0);
         let p = FF::is_prime(&bp, &mut rng);
         let n = FF::is_prime(&bn, &mut rng);
         println!("ff_is_prime: {} = {}, {} = {}", bp, p, bn, n);

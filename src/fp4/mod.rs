@@ -1,7 +1,6 @@
 pub mod wrappers;
 
 extern crate libc;
-use self::libc::{c_int};
 
 use std::fmt;
 use fp4::wrappers::*;
