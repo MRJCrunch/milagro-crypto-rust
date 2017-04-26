@@ -22,9 +22,9 @@ impl ECP {
         }
     }
 
-    pub fn add(P: &mut ECP, Q: &ECP, W: &ECP) {
+    pub fn add(P: &mut ECP, Q: &ECP) {
         unsafe {
-            ECP_add(P, Q, W);
+            ECP_add(P, Q);
         }
     }
 

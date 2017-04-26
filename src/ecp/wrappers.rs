@@ -33,7 +33,7 @@ extern {
     pub fn ECP_output(P: *const ECP) -> c_void;
 
     pub fn ECP_mul(P: *mut ECP, e: *const BIG) -> c_void;
-    pub fn ECP_add(P: *mut ECP, Q: *const ECP, W: *const ECP) -> c_void;
+    pub fn ECP_add(P: *mut ECP, Q: *const ECP) -> c_void;
     pub fn ECP_sub(P: *mut ECP, W: *const ECP) -> c_void;
     pub fn ECP_toOctet(W: *mut octet, P: *const ECP) -> c_void;
     pub fn ECP_fromOctet(P: *mut ECP, W: *const octet) -> c_int;
