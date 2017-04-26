@@ -1,6 +1,6 @@
 [package]
 name = "milagro-crypto"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["Sergej Pupykin <sergej.pupykin@dsr-company.com>"]
 build="build.rs"
 license="Apache-2.0"
