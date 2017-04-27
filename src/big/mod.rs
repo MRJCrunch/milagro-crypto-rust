@@ -371,10 +371,18 @@ impl fmt::Debug for BIG {
 mod tests {
     use super::*;
 
-    const SEED: [u8; 32] = [ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                             0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00,
-                             0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                             0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02 ];
+    extern crate rand;
+    use self::rand::os::{OsRng};
+    use self::rand::Rng;
+
+    #[test]
+    fn test_random_mod_order() {
+        let mut seed: Vec<u8> = vec![0; 32];
+        let mut os_rng = OsRng::new().unwrap();
+        os_rng.fill_bytes(&mut seed.as_mut_slice());
+        let mut rng = Random::new(&seed);
+        let r = BIG::randomnum(unsafe { &CURVE_Order }, &mut rng);
+    }
 
     #[test]
     fn test_bytes() {
@@ -388,7 +396,11 @@ mod tests {
 
     #[test]
     fn test_big_random() {
-        let mut rng = Random::new(SEED);
+        let SEED: Vec<u8> = vec![ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                  0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                  0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                  0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02 ];
+        let mut rng = Random::new(&SEED);
         let m = BIG::new_int(0x1000000);
         let r = BIG::randomnum(&m, &mut rng);
         println!("big_random={}", r);
