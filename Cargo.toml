@@ -11,4 +11,4 @@ pkg-config = "0.3.9"
 
 [dependencies]
 libc = "0.2.21"
-rand = "*"
+rand = "0.3.14"
