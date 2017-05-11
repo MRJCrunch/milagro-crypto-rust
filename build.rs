@@ -12,6 +12,9 @@ fn main() {
     let src = Path::new(&cargo_dir[..]);
     let dst = Path::new(&output_dir[..]);
 
+    let mut src_str:String = String::from(Path::new(&cargo_dir[..]).to_str().unwrap());
+    let mut dst_str:String = String::from(Path::new(&output_dir[..]).to_str().unwrap());
+
     let libs = vec!["libamcl_pairing", "libamcl_ecc", "libamcl_curve", "libamcl_core"];
 
     let mut found = true;
@@ -55,10 +58,28 @@ fn main() {
         return;
     }
 
-    // TODO: check it!
-    //let target = env::var("TARGET").unwrap();
-
     let root = src.join("milagro-crypto-c");
+    let mut root_str:String = String::from(root.to_str().unwrap());
+
+    let target = env::var("TARGET").unwrap();
+    println!("target={}", target);
+    match target.find("-windows-") {
+        Some(..) => {
+            // fix pathes for MSYS
+            src_str.replace(":\\", "/");
+            dst_str.replace(":\\", "/");
+            root_str.replace(":\\", "/");
+
+            src_str.replace("\\", "/");
+            dst_str.replace("\\", "/");
+            root_str.replace("\\", "/");
+
+            src_str.insert(0, '/');
+            dst_str.insert(0, '/');
+            root_str.insert(0, '/');
+        },
+        None => {}
+    }
 
     let _ = fs::remove_dir_all(&dst.join("pkg"));
     let _ = fs::remove_dir_all(&dst.join("build"));
@@ -66,25 +87,25 @@ fn main() {
 
     run(Command::new("sh")
         .arg("-c")
-        .arg(&format!("cd {} && \
+        .arg(&format!("cd {}/build && \
                        cmake \
                        -DCMAKE_BUILD_TYPE=Release \
                        -DCMAKE_INSTALL_PREFIX=/ \
                        -DBUILD_SHARED_LIBS=OFF \
                        -DCMAKE_POSITION_INDEPENDENT_CODE=ON {}",
-                      dst.join("build").to_str().unwrap(),
-                      root.as_path().to_str().unwrap()))
+                      dst_str,
+                      root_str))
         .current_dir(&dst.join("build")));
 
     run(Command::new("make")
         .arg(&format!("-j{}", env::var("NUM_JOBS").unwrap()))
-        .current_dir(&dst.join("build")));
+        .current_dir(&format!("{}/build", dst_str)));
 
     run(Command::new("make")
         .arg(&format!("-j{}", env::var("NUM_JOBS").unwrap()))
         .arg("install")
-        .arg(&format!("DESTDIR={}", dst.join("pkg").to_str().unwrap()))
-        .current_dir(&dst.join("build")));
+        .arg(&format!("DESTDIR={}/pkg", dst_str))
+        .current_dir(&format!("{}/build", dst_str)));
 
     println!("cargo:rustc-flags=-L {}/lib \
               -l amcl_pairing \
