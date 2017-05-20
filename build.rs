@@ -12,6 +12,25 @@ fn main() {
     let src = Path::new(&cargo_dir[..]);
     let dst = Path::new(&output_dir[..]);
 
+    let target = env::var("TARGET").unwrap();
+    println!("target={}", target);
+    match target.find("-windows-") {
+        Some(..) => {
+	    // do not build c-code on windows, use binaries
+	    let prebuilt_dir = env::var("SOVRIN_PREBUILT_DEPS_DIR").unwrap();
+	    println!("cargo:rustc-link-search=native={}", prebuilt_dir);
+            println!("cargo:rustc-flags=-L {}/lib \
+                  -l libamcl_pairing \
+                  -l libamcl_ecc \
+                  -l libamcl_curve \
+                  -l libamcl_core \
+                  ", prebuilt_dir);
+            println!("cargo:include={}/include", prebuilt_dir);
+	    return;
+        },
+        None => {}
+    }
+
     let libs = vec!["libamcl_pairing", "libamcl_ecc", "libamcl_curve", "libamcl_core"];
 
     let mut found = true;
@@ -54,9 +73,6 @@ fn main() {
         println!("cargo:include={}/include", dst.join("pkg").display());
         return;
     }
-
-    // TODO: check it!
-    //let target = env::var("TARGET").unwrap();
 
     let root = src.join("milagro-crypto-c");
 
