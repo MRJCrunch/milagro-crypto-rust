@@ -353,6 +353,37 @@ impl BIG {
         }
         return ret;
     }
+
+    pub fn to_hex(&self) -> String {
+        let mut ret: String = String::with_capacity(NLEN * 16 + NLEN - 1);
+
+        for i in 0..NLEN {
+            if i == NLEN-1 {
+                ret.push_str(&format!("{:X}", self.val[i]));
+            } else {
+                ret.push_str(&format!("{:X} ", self.val[i]));
+            }
+        }
+        return ret;
+    }
+
+    pub fn from_hex(val: String) -> BIG {
+        let mut ret:BIG = BIG::default();
+        let mut iter = val.split_whitespace();
+        for i in 0..NLEN {
+            let v = iter.next();
+            match v {
+                Some(x) => {
+                    ret.val[i] = chunk::from_str_radix(x, 16).unwrap();
+                },
+                None => {
+                    // TODO: is it error?
+                    break;
+                }
+            }
+        }
+        return ret;
+    }
 }
 
 impl fmt::Display for BIG {
@@ -381,7 +412,7 @@ mod tests {
         let mut os_rng = OsRng::new().unwrap();
         os_rng.fill_bytes(&mut seed.as_mut_slice());
         let mut rng = Random::new(&seed);
-        let r = BIG::randomnum(unsafe { &CURVE_Order }, &mut rng);
+        BIG::randomnum(unsafe { &CURVE_Order }, &mut rng);
     }
 
     #[test]
@@ -404,5 +435,14 @@ mod tests {
         let m = BIG::new_int(0x1000000);
         let r = BIG::randomnum(&m, &mut rng);
         println!("big_random={}", r);
+    }
+
+    #[test]
+    fn test_big_hex_io() {
+        let m = BIG::new_int(0x1000000);
+        let s = m.to_hex();
+        let r = BIG::from_hex(s.clone());
+        println!("big_hex_io=s:{},m:{},r:{}", s, m, r);
+        assert_eq!(m, r);
     }
 }
