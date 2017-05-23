@@ -3,7 +3,30 @@ pub mod wrappers;
 extern crate libc;
 
 use std::fmt;
+use std::str::SplitWhitespace;
+use big::wrappers::*;
+use fp2::wrappers::*;
 use fp4::wrappers::*;
+
+impl FP4 {
+    pub fn to_hex(&self) -> String {
+        let mut ret: String = String::with_capacity(4 * BIG_HEX_STRING_LEN);
+        ret.push_str(&format!("{} {}", self.a.to_hex(), self.b.to_hex()));
+        return ret;
+    }
+
+    pub fn from_hex_iter(iter: &mut SplitWhitespace) -> FP4 {
+        let mut ret:FP4 = FP4::default();
+        ret.a = FP2::from_hex_iter(iter);
+        ret.b = FP2::from_hex_iter(iter);
+        return ret;
+    }
+
+    pub fn from_hex(val: String) -> FP4 {
+        let mut iter = val.split_whitespace();
+        return FP4::from_hex_iter(&mut iter);
+    }
+}
 
 impl PartialEq for FP4 {
     fn eq(&self, other: &FP4) -> bool {

@@ -5,6 +5,7 @@ pub mod wrappers;
 extern crate libc;
 
 use std::fmt;
+use std::str::SplitWhitespace;
 use big::wrappers::*;
 use randapi::wrappers::*;
 use ecp::wrappers::*;
@@ -105,6 +106,28 @@ impl ECP {
             ECP_fromOctet(&mut ret, W);
         }
         return ret;
+    }
+
+    pub fn to_hex(&self) -> String {
+        let mut ret: String = String::with_capacity(4 * BIG_HEX_STRING_LEN);
+        ret.push_str(&format!("{} {} {} {}", self.inf, self.x.to_hex(), self.y.to_hex(), self.z.to_hex()));
+        return ret;
+    }
+
+    pub fn from_hex_iter(iter: &mut SplitWhitespace) -> ECP {
+        let mut ret:ECP = ECP::default();
+        if let Some(x) = iter.next() {
+            ret.inf = i32::from_str_radix(x, 16).unwrap();
+            ret.x = BIG::from_hex_iter(iter);
+            ret.y = BIG::from_hex_iter(iter);
+            ret.z = BIG::from_hex_iter(iter);
+        }
+        return ret;
+    }
+
+    pub fn from_hex(val: String) -> ECP {
+        let mut iter = val.split_whitespace();
+        return ECP::from_hex_iter(&mut iter);
     }
 }
 

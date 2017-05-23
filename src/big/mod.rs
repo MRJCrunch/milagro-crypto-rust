@@ -10,6 +10,7 @@ use self::libc::{c_int};
 
 use std::cmp::Ordering;
 use std::fmt;
+use std::str::SplitWhitespace;
 use big::wrappers::*;
 use randapi::Random;
 
@@ -367,9 +368,8 @@ impl BIG {
         return ret;
     }
 
-    pub fn from_hex(val: String) -> BIG {
+    pub fn from_hex_iter(iter: &mut SplitWhitespace) -> BIG {
         let mut ret:BIG = BIG::default();
-        let mut iter = val.split_whitespace();
         for i in 0..NLEN {
             let v = iter.next();
             match v {
@@ -383,6 +383,11 @@ impl BIG {
             }
         }
         return ret;
+    }
+
+    pub fn from_hex(val: String) -> BIG {
+        let mut iter = val.split_whitespace();
+        return BIG::from_hex_iter(&mut iter);
     }
 }
 

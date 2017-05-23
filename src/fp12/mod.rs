@@ -5,8 +5,10 @@ pub mod wrappers;
 extern crate libc;
 
 use std::fmt;
-use big::wrappers::BIG;
+use std::str::SplitWhitespace;
+use big::wrappers::*;
 use randapi::wrappers::octet;
+use fp4::wrappers::*;
 use fp12::wrappers::*;
 
 impl FP12 {
@@ -40,6 +42,25 @@ impl FP12 {
             FP12_fromOctet(&mut ret, W);
         }
         return ret;
+    }
+
+    pub fn to_hex(&self) -> String {
+        let mut ret: String = String::with_capacity(12 * BIG_HEX_STRING_LEN);
+        ret.push_str(&format!("{} {} {}", self.a.to_hex(), self.b.to_hex(), self.c.to_hex()));
+        return ret;
+    }
+
+    pub fn from_hex_iter(iter: &mut SplitWhitespace) -> FP12 {
+        let mut ret:FP12 = FP12::default();
+        ret.a = FP4::from_hex_iter(iter);
+        ret.b = FP4::from_hex_iter(iter);
+        ret.c = FP4::from_hex_iter(iter);
+        return ret;
+    }
+
+    pub fn from_hex(val: String) -> FP12 {
+        let mut iter = val.split_whitespace();
+        return FP12::from_hex_iter(&mut iter);
     }
 }
 

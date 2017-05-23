@@ -18,6 +18,8 @@ pub const BMASK: chunk =  ( (1 as chunk) << BASEBITS) - 1;
 pub const OMASK: chunk = -( (1 as chunk) << TBITS);
 pub const FEXCESS:chunk = ( (1 as chunk) << (BASEBITS*(NLEN)-MBITS));
 
+pub const BIG_HEX_STRING_LEN:usize = NLEN * 16 + NLEN - 1;
+
 #[repr(C)]
 pub struct BIG {
     pub val: [ chunk; NLEN ]
