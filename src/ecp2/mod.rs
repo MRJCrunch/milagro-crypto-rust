@@ -35,6 +35,19 @@ impl ECP2 {
         }
     }
 
+    pub fn inf(&self) -> i32 {
+        return self.inf as i32;
+    }
+
+    pub fn new_fp2s(x: FP2, y: FP2, z: FP2) -> ECP2 {
+        ECP2 {
+            inf: 0,
+            x: x,
+            y: y,
+            z: z
+        }
+    }
+
     pub fn to_hex(&self) -> String {
         let mut ret: String = String::with_capacity(7 * BIG_HEX_STRING_LEN);
         ret.push_str(&format!("{} {} {} {}", self.inf, self.x.to_hex(), self.y.to_hex(), self.z.to_hex()));
