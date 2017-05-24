@@ -32,6 +32,7 @@ extern {
     pub fn ECP2_mul(P: *mut ECP2, e: *const BIG) -> c_void;
     pub fn ECP2_add(P: *mut ECP2, Q: *const ECP2) -> c_void;
     pub fn ECP2_sub(P: *mut ECP2, W: *const ECP2) -> c_void;
+    pub fn ECP2_inf(P: *mut ECP2) -> c_void;
 }
 
 

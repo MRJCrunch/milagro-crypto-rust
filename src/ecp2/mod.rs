@@ -35,8 +35,10 @@ impl ECP2 {
         }
     }
 
-    pub fn inf(&self) -> i32 {
-        return self.inf as i32;
+    pub fn inf(P: &mut ECP2) {
+        unsafe {
+            ECP2_inf(P);
+        }
     }
 
     pub fn new_fp2s(x: FP2, y: FP2, z: FP2) -> ECP2 {
@@ -102,5 +104,24 @@ impl fmt::Display for ECP2 {
 impl fmt::Debug for ECP2 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "ECP2: [ {}, {}, {}, {} ]", self.inf, self.x, self.y, self.z)
+    }
+}
+
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_ecp2_hex_io() {
+        let m = ECP2::from_hex(String::from("0 \
+                                             1 0 0 0 0 0 0 0 0 0 \
+                                             2 0 0 0 0 0 0 0 0 0 \
+                                             3 0 0 0 0 0 0 0 0 0"));
+        let s = m.to_hex();
+        let r = ECP2::from_hex(s.clone());
+        println!("ecp2_hex_io=s:{},m:{},r:{}", s, m, r);
+        assert_eq!(m, r);
     }
 }
