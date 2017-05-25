@@ -48,6 +48,7 @@ impl Default for DBIG {
 
 extern {
     // TODO: maybe move to separate module "rom"
+
     pub static MConst: chunk;
     pub static Modulus: BIG;
     pub static CURVE_Order: BIG;
@@ -69,6 +70,9 @@ extern {
     pub static CURVE_BB: [[BIG; 4]; 4];
     pub static CURVE_A: c_int;
     // ^^^^^^^
+
+    // TODO: FIXME: create fp module?
+    pub fn FP_neg(r: *mut BIG, a: *const BIG) -> c_void;
 
     pub fn BIG_invmodp(r: *mut BIG, a: *const BIG,p: *const BIG) -> c_void;
     pub fn BIG_sqr(c: *mut DBIG, a: *const BIG) -> c_void;

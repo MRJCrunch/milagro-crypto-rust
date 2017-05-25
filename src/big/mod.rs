@@ -289,28 +289,10 @@ impl BIG {
         return (a.val[NLEN-1] & OMASK) >> (MBITS % BASEBITS);
     }
 
-    fn logb2(w: u32) -> usize {
-        let mut v=w;
-        v |= v >> 1;
-        v |= v >> 2;
-        v |= v >> 4;
-        v |= v >> 8;
-        v |= v >> 16;
-
-        v = v - ((v >> 1) & 0x55555555);
-        v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
-        let r= ((   ((v + (v >> 4)) & 0xF0F0F0F)   * 0x1010101) >> 24) as usize;
-        return r+1;
-    }
-
     pub fn neg(a: &mut BIG) {
-        let mut p = unsafe { Modulus };
-        BIG::norm(a);
-        let sb = BIG::logb2(BIG::excess(a) as u32);
-        BIG::fshl(&mut p, sb as i32);
-        BIG::rsub(a, &p);
-        if BIG::excess(a)>=FEXCESS {
-            BIG::reduce(a);
+        let v = a.clone();
+        unsafe {
+            FP_neg(a, &v);
         }
     }
 

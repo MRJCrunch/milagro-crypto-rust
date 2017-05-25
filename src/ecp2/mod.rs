@@ -8,6 +8,7 @@ use std::fmt;
 use std::str::SplitWhitespace;
 use big::wrappers::*;
 use fp2::wrappers::*;
+use randapi::wrappers::*;
 use ecp2::wrappers::*;
 
 impl ECP2 {
@@ -34,6 +35,21 @@ impl ECP2 {
             ECP2_sub(P, Q);
         }
     }
+
+    pub fn toOctet(W: &mut octet, P: &ECP2) {
+        unsafe {
+            ECP2_toOctet(W, P);
+        }
+    }
+
+    pub fn fromOctet(W: &octet) -> ECP2 {
+        let mut ret: ECP2 = ECP2::default();
+        unsafe {
+            ECP2_fromOctet(&mut ret, W);
+        }
+        return ret;
+    }
+
 
     pub fn inf(P: &mut ECP2) {
         unsafe {

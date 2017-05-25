@@ -6,6 +6,7 @@ use self::libc::{c_int, c_void};
 
 use big::wrappers::*;
 use fp2::wrappers::FP2;
+use randapi::wrappers::*;
 
 #[repr(C)]
 pub struct ECP2 {
@@ -33,6 +34,9 @@ extern {
     pub fn ECP2_add(P: *mut ECP2, Q: *const ECP2) -> c_void;
     pub fn ECP2_sub(P: *mut ECP2, W: *const ECP2) -> c_void;
     pub fn ECP2_inf(P: *mut ECP2) -> c_void;
+
+    pub fn ECP2_toOctet(W: *mut octet, P: *const ECP2) -> c_void;
+    pub fn ECP2_fromOctet(P: *mut ECP2, W: *const octet) -> c_int;
 }
 
 

@@ -30,29 +30,16 @@ impl ECP {
     }
 
     pub fn inf(a: &mut ECP) {
-        a.inf=1;
-        a.x = BIG::default();
-        BIG::one(&mut a.y);
-        BIG::one(&mut a.z);
+        unsafe {
+            ECP_inf(a);
+        }
     }
 
     fn rhs(x: &mut BIG) -> BIG {
-        BIG::norm(x);
-        let mut r=x.clone();
-        BIG::sqrm(&mut r);
-
-        // KLUDGE: depends on CURVETYPE milagro define. This is "CURVETYPE: WEIERSTRASS"
-        let b = unsafe { CURVE_B };
-        r = BIG::mulm(&r, &x);
-        if unsafe { CURVE_A } == -3 {
-            let mut cx=x.clone();
-            cx = BIG::imul(&cx, 3);
-            BIG::neg(&mut cx);
-            BIG::norm(&mut cx);
-            r = BIG::add(&r, &cx);
+        let mut r = BIG::default();
+        unsafe {
+            ECP_rhs(&mut r, x);
         }
-        r = BIG::add(&r, &b);
-        BIG::reduce(&mut r);
         return r;
     }
 
@@ -62,12 +49,9 @@ impl ECP {
     }
 
     pub fn neg(P: &mut ECP) {
-	if ECP::is_infinity(P) {
-            return;
+        unsafe {
+            ECP_neg(P);
         }
-        // KLUDGE: depends on CURVETYPE milagro define. This is "CURVETYPE: WEIERSTRASS"
-	BIG::neg(&mut P.y);
-        BIG::norm(&mut P.y);
     }
 
     pub fn sub(P: &mut ECP, Q:&ECP) {
@@ -84,8 +68,13 @@ impl ECP {
         let rhs=ECP::rhs(&mut E.x);
 
         // KLUDGE: depends on CURVETYPE milagro define. This is "CURVETYPE: WEIERSTRASS"
+
+        println!("qweqweqwe: rhs={}", rhs);
+        println!("qweqweqwe: e={}", E);
+
         let mut y2=BIG::new_copy(&E.y);
         BIG::sqrm(&mut y2);
+        println!("qweqweqwe: y2={}", y2);
         if y2 == rhs {
             E.inf=0;
         } else {
@@ -177,5 +166,13 @@ mod tests {
         ecp3.inf = 1;
         assert_eq!(ecp1, ecp2);
         assert_ne!(ecp1, ecp3);
+    }
+
+    #[test]
+    fn test_new_bigs() {
+        let bx = unsafe { CURVE_Gx };
+        let by = unsafe { CURVE_Gy };
+        let ecp = ECP::new_bigs(&bx, &by);
+        println!("qweqweqwe: ret={}, x={}, y={}", ecp, bx, by);
     }
 }
