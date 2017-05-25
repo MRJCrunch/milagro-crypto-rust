@@ -69,12 +69,8 @@ impl ECP {
 
         // KLUDGE: depends on CURVETYPE milagro define. This is "CURVETYPE: WEIERSTRASS"
 
-        println!("qweqweqwe: rhs={}", rhs);
-        println!("qweqweqwe: e={}", E);
-
         let mut y2=BIG::new_copy(&E.y);
         BIG::sqrm(&mut y2);
-        println!("qweqweqwe: y2={}", y2);
         if y2 == rhs {
             E.inf=0;
         } else {
@@ -173,6 +169,6 @@ mod tests {
         let bx = unsafe { CURVE_Gx };
         let by = unsafe { CURVE_Gy };
         let ecp = ECP::new_bigs(&bx, &by);
-        println!("qweqweqwe: ret={}, x={}, y={}", ecp, bx, by);
+        println!("new_bigs: ret={}, x={}, y={}", ecp, bx, by);
     }
 }
