@@ -356,7 +356,7 @@ impl BIG {
             let v = iter.next();
             match v {
                 Some(x) => {
-                    ret.val[i] = chunk::from_str_radix(x, 16).unwrap();
+                    ret.val[i] = u64::from_str_radix(x, 16).unwrap() as chunk;
                 },
                 None => {
                     // TODO: is it error?
@@ -429,7 +429,8 @@ mod tests {
         let m = BIG::new_int(0x1000000);
         let s = m.to_hex();
         let r = BIG::from_hex(s.clone());
-        println!("big_hex_io=s:{},m:{},r:{}", s, m, r);
+        let r2 = BIG::from_hex(String::from("A110F34E83D27B B9C4C7A7C37D6E 1A3A0CB86A5CA A4804E43EF1DCB 98035C9BEF3E44D3"));
+        println!("big_hex_io=s:{},m:{},r:{},r2:{}", s, m, r, r2);
         assert_eq!(m, r);
     }
 }
