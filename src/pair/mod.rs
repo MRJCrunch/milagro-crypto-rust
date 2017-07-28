@@ -8,6 +8,7 @@ use fp12::wrappers::*;
 use ecp::wrappers::*;
 use ecp2::wrappers::*;
 use pair::wrappers::*;
+use big::wrappers::*;
 
 pub struct PAIR {
 }
