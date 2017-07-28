@@ -24,6 +24,24 @@ impl PAIR {
             PAIR_fexp(r);
         }
     }
+
+    pub fn g1_mul(P: &mut ECP, e: &BIG) {
+        unsafe {
+            PAIR_G1mul(P, e);
+        }
+    }
+
+    pub fn g2_mul(P: &mut ECP2, e: &BIG) {
+        unsafe {
+            PAIR_G2mul(P, e);
+        }
+    }
+
+    pub fn gt_pow(f: &mut FP12, e: &BIG) {
+        unsafe {
+            PAIR_GTpow(P, e);
+        }
+    }
 }
 
 #[cfg(test)]

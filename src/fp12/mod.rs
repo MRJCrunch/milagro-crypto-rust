@@ -30,6 +30,12 @@ impl FP12 {
         }
     }
 
+    pub fn reduce(w: &mut FP12) {
+        unsafe {
+            FP12_reduce(w);
+        }
+    }
+
     pub fn toOctet(W: &mut octet, g: &FP12) {
         unsafe {
             FP12_toOctet(W, g);

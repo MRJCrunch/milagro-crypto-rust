@@ -27,6 +27,7 @@ impl Default for FP12 {
 
 extern {
     pub fn FP12_output(w: *const FP12) -> c_void;
+    pub fn FP12_reduce(w: *mut FP12) -> c_void;
     pub fn FP12_mul(w: *mut FP12, y: *const FP12) -> c_void;
     pub fn FP12_pow(r: *mut FP12, a: *const FP12, b: *const BIG) -> c_void;
     pub fn FP12_inv(w: *mut FP12, x: *const FP12) -> c_void;

@@ -7,10 +7,14 @@ use self::libc::{c_void};
 use fp12::wrappers::*;
 use ecp::wrappers::*;
 use ecp2::wrappers::*;
+use big::wrappers::*;
 
 extern {
     pub fn PAIR_ate(r: *mut FP12, P: *mut ECP2, Q: *mut ECP) -> c_void;
     pub fn PAIR_fexp(r: *const FP12) -> c_void;
+    pub fn PAIR_G1mul(P: *mut ECP, e: *const BIG) -> c_void;
+    pub fn PAIR_G2mul(P: *mut ECP2, e: *const BIG) -> c_void;
+    pub fn PAIR_GTpow(f: *mut FP12, e: *const BIG) -> c_void;
 }
 
 #[cfg(test)]
