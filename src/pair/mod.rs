@@ -39,7 +39,7 @@ impl PAIR {
 
     pub fn gt_pow(f: &mut FP12, e: &BIG) {
         unsafe {
-            PAIR_GTpow(P, e);
+            PAIR_GTpow(f, e);
         }
     }
 }
